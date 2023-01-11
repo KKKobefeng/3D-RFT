@@ -11,9 +11,9 @@ depth = 0.125; % in m
 showGeometry = false;
 showDirectionV = false;
 showFQuiver = true;
-showFScatter = true;
+showFScatter = false;
 showFScatterxyz = false;
-showAlpha = false;
+showAlpha = true;
 
 %% Read .stl file
 TRG = stlread('./Cylinder/Models/CylinderRough.stl'); % possibilities: CylinderFine, Cylinder, CylinderRough, CylinderVeryRough
@@ -50,8 +50,9 @@ if showGeometry
     zlabel('Z');
     grid on;
     axis on;
+    set(gcf,'PaperPositionMode','auto')
+    print(gcf, '-dpdf', '-r300', './Cylinder/Figures/visual_mesh.pdf');
     hold off;
-    saveas(gcf, './Cylinder/Figures/visual_mesh.pdf', 'pdf');
 
     % Create a quiver plot with the normals as the arrow directions
     figure
@@ -65,8 +66,9 @@ if showGeometry
     zlabel('Z');
     grid on
     axis on
+    set(gcf,'PaperPositionMode','auto')
+    print(gcf, '-dpdf', '-r300', './Cylinder/Figures/visual_normals.pdf');
     hold off;
-    saveas(gcf, './Cylinder/Figures/visual_normals.pdf', 'pdf');
 
     % Show the points in the mesh
     figure
@@ -81,8 +83,9 @@ if showGeometry
     hold on;
     colormap winter;
     scatter3(points(:,1), points(:,2), points(:,3), 5, 'filled');
+    set(gcf,'PaperPositionMode','auto')
+    print(gcf, '-dpdf', '-r300', './Cylinder/Figures/visual_points.pdf');
     hold off;
-    saveas(gcf, './Cylinder/Figures/visual_points.pdf', 'pdf');
 end
 
 %% Compute forces using 3D-RFT function
@@ -102,8 +105,9 @@ if showDirectionV
     zlabel('Z');
     grid on;
     axis on;
+    set(gcf,'PaperPositionMode','auto')
+    print(gcf, '-dpdf', '-r300', './Cylinder/Figures/visual_direction_vectors.pdf');
     hold off;
-    saveas(gcf, './Cylinder/Figures/visual_direction_vectors.pdf', 'pdf');
 end
 
 if showFQuiver
@@ -120,10 +124,12 @@ if showFQuiver
     hold on;
     trimesh(TRGVisual, 'LineWidth', 0.1, 'EdgeColor', '#888888', 'FaceAlpha', 0);
     %trisurf(TRG)
-    q = quiver3(c_inc(:,1), c_inc(:,2), c_inc(:,3), F(:,1), F(:,2), F(:,3),2, 'LineWidth', 2, 'MaxHeadSize', 5);
+    q = quiver3(c_inc(:,1), c_inc(:,2), c_inc(:,3), F(:,1), F(:,2), F(:,3),2, 'LineWidth', 1, 'MaxHeadSize', 5);
     currentColormap = jet;
     SetQuiverColor(q,currentColormap);
-    saveas(gcf, './Cylinder/Figures/forces_quiver.pdf', 'pdf');
+    set(gcf,'PaperPositionMode','auto')
+    print(gcf, '-dpdf', '-r300', './Cylinder/Figures/forces_quiver.pdf');
+    hold off;
 end
 
 if showFScatter
@@ -144,7 +150,9 @@ if showFScatter
     colormap(jet);
     clim([min(vecnorm(f, 2, 2)) max(vecnorm(f, 2, 2))]);
     colorbar;
-    saveas(gcf, './Cylinder/Figures/forces_scatter.pdf', 'pdf');
+    set(gcf,'PaperPositionMode','auto')
+    print(gcf, '-dpdf', '-r300', './Cylinder/Figures/forces_scatter.pdf');
+    hold off;
 end
 
 if showFScatterxyz
@@ -166,7 +174,9 @@ if showFScatterxyz
     %colormap(brewermap([],"-RdYlBu"));
     clim([0 max(abs(f(:,1)))]);
     colorbar;
-    saveas(gcf, './Cylinder/Figures/forces_scatter_x.pdf', 'pdf');
+    set(gcf,'PaperPositionMode','auto')
+    print(gcf, '-dpdf', '-r300', './Cylinder/Figures/forces_scatter_x.pdf');
+    hold off;
 
     % Plot forces on each point of the mesh (scatter y)
     figure;
@@ -186,7 +196,9 @@ if showFScatterxyz
     %colormap(brewermap([],"-RdYlBu"));
     clim([0 max(abs(f(:,2)))]);
     colorbar;
-    saveas(gcf, './Cylinder/Figures/forces_scatter_y.pdf', 'pdf');
+    set(gcf,'PaperPositionMode','auto')
+    print(gcf, '-dpdf', '-r300', './Cylinder/Figures/forces_scatter_y.pdf');
+    hold off;
 
     % Plot forces on each point of the mesh (scatter z)
     figure;
@@ -206,7 +218,9 @@ if showFScatterxyz
     %colormap(brewermap([],"YlOrRd"));
     clim([0 max(abs(f(:,3)))]);
     colorbar;
-    saveas(gcf, './Cylinder/Figures/forces_scatter_z.pdf', 'pdf');
+    set(gcf,'PaperPositionMode','auto')
+    print(gcf, '-dpdf', '-r300', './Cylinder/Figures/forces_scatter_z.pdf');
+    hold off;
 end
 
 if showAlpha
@@ -225,7 +239,9 @@ if showAlpha
     q = quiver3(c_inc(:,1), c_inc(:,2), c_inc(:,3), alpha_gen_n(:,1), alpha_gen_n(:,2), alpha_gen_n(:,3),2, 'LineWidth', 2, 'ShowArrowHead','on', 'MaxHeadSize', 5);
     currentColormap = jet;
     SetQuiverColor(q,currentColormap);
-    saveas(gcf, './Cylinder/Figures/alpha_quiver.pdf', 'pdf');
+    set(gcf,'PaperPositionMode','auto')
+    print(gcf, '-dpdf', '-r300', './Cylinder/Figures/alpha_quiver.pdf');
+    hold off;
 end
 
 function [c_inc, vNormVec, F, f, forcesX, forcesY, forcesZ, T, torqueX, torqueY, torqueZ, alpha_gen_n, alpha_gen_t, alpha] = RFT3Dfunc(points, normals, area, angularVelocity, linearVelocity, rhoC, muInt, muSurf)
