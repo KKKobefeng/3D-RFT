@@ -1,6 +1,10 @@
 close all
 clear all
 
+%% NOTES - TODO
+% Something wrong with distinction of force direction on cylinder
+% 
+
 %% Define inputs - Agarwal verification studies
 linearVelocity = 0.1; % linear velocity in m/s
 angularVelocity = pi; % angular velocity in rad/s
@@ -10,13 +14,15 @@ muSurf = 0.4; % intruder-surface interaction coefficient
 depth = 0.125; % in m
 showGeometry = false;
 showDirectionV = false;
-showFQuiver = true;
+showFQuiver = false;
 showFScatter = false;
 showFScatterxyz = false;
 showAlpha = true;
+saveFigures = false;
+unitTest = false;
 
 %% Read .stl file
-TRG = stlread('./Cylinder/Models/CylinderRough.stl'); % possibilities: CylinderFine, Cylinder, CylinderRough, CylinderVeryRough
+TRG = stlread('./Cylinder/Models/CylinderVeryRough.stl'); % possibilities: CylinderFine, Cylinder, CylinderRough, CylinderVeryRough
 TRGVisual = stlread('./Cylinder/Models/CylinderVeryRough.stl');
 % Rotate TRG object
 TRG = rotateTriangulationX(TRG, 0);
@@ -50,8 +56,10 @@ if showGeometry
     zlabel('Z');
     grid on;
     axis on;
+    if saveFigures
     set(gcf,'PaperPositionMode','auto')
     print(gcf, '-dpdf', '-r300', './Cylinder/Figures/visual_mesh.pdf');
+    end
     hold off;
 
     % Create a quiver plot with the normals as the arrow directions
@@ -66,8 +74,10 @@ if showGeometry
     zlabel('Z');
     grid on
     axis on
+    if saveFigures
     set(gcf,'PaperPositionMode','auto')
     print(gcf, '-dpdf', '-r300', './Cylinder/Figures/visual_normals.pdf');
+    end
     hold off;
 
     % Show the points in the mesh
@@ -83,13 +93,15 @@ if showGeometry
     hold on;
     colormap winter;
     scatter3(points(:,1), points(:,2), points(:,3), 5, 'filled');
+    if saveFigures
     set(gcf,'PaperPositionMode','auto')
     print(gcf, '-dpdf', '-r300', './Cylinder/Figures/visual_points.pdf');
+    end
     hold off;
 end
 
 %% Compute forces using 3D-RFT function
-[c_inc, vNormVec, F, f, forcesX, forcesY, forcesZ, T, torqueX, torqueY, torqueZ, alpha_gen_n, alpha_gen_t, alpha] = RFT3Dfunc(points, normals, area, angularVelocity, linearVelocity, rhoC, muInt, muSurf);
+[c_inc, vNormVec, F, f, forcesX, forcesY, forcesZ, T, torqueX, torqueY, torqueZ, alpha_gen, alpha_gen_n, alpha_gen_t, alpha] = RFT3Dfunc(points, normals, area, angularVelocity, linearVelocity, rhoC, muInt, muSurf, unitTest);
 
 %% Plots
 if showDirectionV
@@ -105,8 +117,10 @@ if showDirectionV
     zlabel('Z');
     grid on;
     axis on;
+    if saveFigures
     set(gcf,'PaperPositionMode','auto')
     print(gcf, '-dpdf', '-r300', './Cylinder/Figures/visual_direction_vectors.pdf');
+    end
     hold off;
 end
 
@@ -127,8 +141,10 @@ if showFQuiver
     q = quiver3(c_inc(:,1), c_inc(:,2), c_inc(:,3), F(:,1), F(:,2), F(:,3),2, 'LineWidth', 1, 'MaxHeadSize', 5);
     currentColormap = jet;
     SetQuiverColor(q,currentColormap);
+    if saveFigures
     set(gcf,'PaperPositionMode','auto')
     print(gcf, '-dpdf', '-r300', './Cylinder/Figures/forces_quiver.pdf');
+    end
     hold off;
 end
 
@@ -150,15 +166,17 @@ if showFScatter
     colormap(jet);
     clim([min(vecnorm(f, 2, 2)) max(vecnorm(f, 2, 2))]);
     colorbar;
+    if saveFigures
     set(gcf,'PaperPositionMode','auto')
     print(gcf, '-dpdf', '-r300', './Cylinder/Figures/forces_scatter.pdf');
+    end
     hold off;
 end
 
 if showFScatterxyz
     % Plot forces on each point of the mesh (scatter x)
     figure;
-    title ('Forces (x) acting on each subsurface');
+    %title ('f_X [N/m^2]');
     view([45 25])
     daspect([1 1 1]);
     xlabel('x');
@@ -169,18 +187,23 @@ if showFScatterxyz
     hold on;
     trimesh(TRGVisual, 'LineWidth', 0.1, 'EdgeColor', '#888888', 'FaceAlpha', 0);
     %trisurf(TRG)
-    scatter3(c_inc(:,1), c_inc(:,2), c_inc(:,3), 'filled', 'MarkerEdgeColor', 'none', 'CData', abs(f(:,1)), 'SizeData', 1000*abs(f(:,1)));
+    scatter3(c_inc(:,1), c_inc(:,2), c_inc(:,3), 'filled', 'MarkerEdgeColor', 'none', 'CData', f(:,1), 'SizeData', 500*max(max(abs(f)))/max(abs(f(:,2)))*abs(f(:,1))); % -f just because of inverted colorbar
     colormap(jet);
     %colormap(brewermap([],"-RdYlBu"));
-    clim([0 max(abs(f(:,1)))]);
-    colorbar;
+    clim([-max(max(abs(f))) max(max(abs(f)))]);
+    c = colorbar;
+    c.Ticks = [-max(max(abs(f))) 0 max(max(abs(f)))];
+    c.Label.String = '\bf{f_X [N/m²]}';
+    c.Location = 'northoutside';
+    if saveFigures
     set(gcf,'PaperPositionMode','auto')
     print(gcf, '-dpdf', '-r300', './Cylinder/Figures/forces_scatter_x.pdf');
+    end
     hold off;
 
     % Plot forces on each point of the mesh (scatter y)
     figure;
-    title ('Forces (y) acting on each subsurface');
+    %title ('f_Y [N/m^2]');
     view([45 25])
     daspect([1 1 1]);
     xlabel('x');
@@ -191,18 +214,23 @@ if showFScatterxyz
     hold on;
     trimesh(TRGVisual, 'LineWidth', 0.1, 'EdgeColor', '#888888', 'FaceAlpha', 0);
     %trisurf(TRG)
-    scatter3(c_inc(:,1), c_inc(:,2), c_inc(:,3), 'filled', 'MarkerEdgeColor', 'none', 'CData', abs(f(:,2)), 'SizeData', 1000*abs(f(:,2)));
+    scatter3(c_inc(:,1), c_inc(:,2), c_inc(:,3), 'filled', 'MarkerEdgeColor', 'none', 'CData', f(:,2), 'SizeData', 500*max(max(abs(f)))/max(abs(f(:,2)))*abs(f(:,2)));
     colormap(jet);
     %colormap(brewermap([],"-RdYlBu"));
-    clim([0 max(abs(f(:,2)))]);
-    colorbar;
+    clim([-max(max(abs(f))) max(max(abs(f)))]);
+    c = colorbar;
+    c.Ticks = [-max(max(abs(f))) 0 max(max(abs(f)))];
+    c.Label.String = '\bf{f_Y [N/m²]}';
+    c.Location = 'northoutside';
+    if saveFigures
     set(gcf,'PaperPositionMode','auto')
     print(gcf, '-dpdf', '-r300', './Cylinder/Figures/forces_scatter_y.pdf');
+    end
     hold off;
 
     % Plot forces on each point of the mesh (scatter z)
     figure;
-    title ('Forces (z) acting on each subsurface');
+    %title ('f_Z [N/m^2]');
     view([45 25])
     daspect([1 1 1]);
     xlabel('x');
@@ -213,19 +241,45 @@ if showFScatterxyz
     hold on;
     trimesh(TRGVisual, 'LineWidth', 0.1, 'EdgeColor', '#888888', 'FaceAlpha', 0);
     %trisurf(TRG)
-    scatter3(c_inc(:,1), c_inc(:,2), c_inc(:,3), 'filled', 'MarkerEdgeColor', 'none', 'CData', abs(f(:,3)), 'SizeData', 1000*abs(f(:,3)));
+    scatter3(c_inc(:,1), c_inc(:,2), c_inc(:,3), 'filled', 'MarkerEdgeColor', 'none', 'CData', f(:,3), 'SizeData', 500*max(max(abs(f)))/max(abs(f(:,2)))*abs(f(:,3)));
     colormap(jet);
     %colormap(brewermap([],"YlOrRd"));
-    clim([0 max(abs(f(:,3)))]);
-    colorbar;
+    clim([-max(max(abs(f))) max(max(abs(f)))]);
+    c = colorbar;
+    c.Ticks = [-max(max(abs(f))) 0 max(max(abs(f)))];
+    c.Label.String = '\bf{f_Z [N/m²]}';
+    c.Location = 'northoutside';
+    if saveFigures
     set(gcf,'PaperPositionMode','auto')
     print(gcf, '-dpdf', '-r300', './Cylinder/Figures/forces_scatter_z.pdf');
+    end
     hold off;
 end
 
 if showAlpha
     figure;
-    title ('Test forces acting on each subsurface (quiver)');
+    title ('forces alpha_{gen} (quiver)');
+    view([45 25])
+    daspect([1 1 1]);
+    xlabel('x');
+    ylabel('y');
+    zlabel('z');
+    zlim([-inf inf]);
+    grid on;
+    hold on;
+    trimesh(TRGVisual, 'LineWidth', 0.1, 'EdgeColor', '#888888', 'FaceAlpha', 0);
+    %trisurf(TRG)
+    q = quiver3(c_inc(:,1), c_inc(:,2), c_inc(:,3), alpha(:,1), alpha(:,2), alpha(:,3),2, 'LineWidth', 2, 'ShowArrowHead','on', 'MaxHeadSize', 5);
+    currentColormap = jet;
+    SetQuiverColor(q,currentColormap);
+    if saveFigures
+    set(gcf,'PaperPositionMode','auto')
+    print(gcf, '-dpdf', '-r300', './Cylinder/Figures/alpha_n_quiver.pdf');
+    end
+    hold off;
+
+    figure;
+    title ('Normal forces alpha_{gen,n} (quiver)');
     view([45 25])
     daspect([1 1 1]);
     xlabel('x');
@@ -239,12 +293,36 @@ if showAlpha
     q = quiver3(c_inc(:,1), c_inc(:,2), c_inc(:,3), alpha_gen_n(:,1), alpha_gen_n(:,2), alpha_gen_n(:,3),2, 'LineWidth', 2, 'ShowArrowHead','on', 'MaxHeadSize', 5);
     currentColormap = jet;
     SetQuiverColor(q,currentColormap);
+    if saveFigures
     set(gcf,'PaperPositionMode','auto')
-    print(gcf, '-dpdf', '-r300', './Cylinder/Figures/alpha_quiver.pdf');
+    print(gcf, '-dpdf', '-r300', './Cylinder/Figures/alpha_n_quiver.pdf');
+    end
     hold off;
+
+    figure;
+    title ('Tangential forces alpha_{gen,t} (quiver)');
+    view([45 25])
+    daspect([1 1 1]);
+    xlabel('x');
+    ylabel('y');
+    zlabel('z');
+    zlim([-inf inf]);
+    grid on;
+    hold on;
+    trimesh(TRGVisual, 'LineWidth', 0.1, 'EdgeColor', '#888888', 'FaceAlpha', 0);
+    %trisurf(TRG)
+    q = quiver3(c_inc(:,1), c_inc(:,2), c_inc(:,3), alpha_gen_t(:,1), alpha_gen_t(:,2), alpha_gen_t(:,3),2, 'LineWidth', 2, 'ShowArrowHead','on', 'MaxHeadSize', 5);
+    currentColormap = jet;
+    SetQuiverColor(q,currentColormap);
+    if saveFigures
+    set(gcf,'PaperPositionMode','auto')
+    print(gcf, '-dpdf', '-r300', './Cylinder/Figures/alpha_t_quiver.pdf');
+    end
+    hold off;
+
 end
 
-function [c_inc, vNormVec, F, f, forcesX, forcesY, forcesZ, T, torqueX, torqueY, torqueZ, alpha_gen_n, alpha_gen_t, alpha] = RFT3Dfunc(points, normals, area, angularVelocity, linearVelocity, rhoC, muInt, muSurf)
+function [c_inc, vNormVec, F, f, forcesX, forcesY, forcesZ, T, torqueX, torqueY, torqueZ, alpha_gen, alpha_gen_n, alpha_gen_t, alpha] = RFT3Dfunc(points, normals, area, angularVelocity, linearVelocity, rhoC, muInt, muSurf, unitTest)
 %% 1. Read Tip Data
 pointList = points;
 areaList = area/1000000; % mm² to m²
@@ -276,17 +354,31 @@ is_intruding = pointList(:,3) < 0;
 include = is_leading_edge & is_intruding;
 
 % isolate the elements that satisfy this condition for calculation -
+
 n_inc = nNormVec(include,:);
 v_inc = vNormVec(include,:);
 a_inc = areaList(include,:);
 c_inc = pointList(include,:);
 d_inc = depthList(include,:);
 
+if unitTest
+n_inc = n_inc(212,:); % REMOVE LATER
+v_inc = v_inc(212,:); % REMOVE LATER
+a_inc = a_inc(212,:); % REMOVE LATER
+c_inc = c_inc(212,:); % REMOVE LATER
+d_inc = d_inc(212,:); % REMOVE LATER
+end
+
 %% 4. Find local coordinate frame
+if unitTest
+z_local = repmat([0,0,1], sum(1), 1); % JUST FOR TESTING
+else
 z_local = repmat([0,0,1], sum(include), 1); % reverse g directon (regular z)
-g_ = -z_local;
+end
+
 r_local = (v_inc - dot(v_inc, z_local, 3) .* z_local) ./ vecnorm(v_inc - dot(v_inc, z_local, 3) .* z_local, 2, 2);
 theta_local = cross(z_local, r_local, 2);
+g_ = -z_local;
 
 %% 5. Find RFT angles (beta, gamma, psi)
 % beta - surface characteristic angle
@@ -295,11 +387,11 @@ beta = zeros(size(n_inc,1),1);
 % Iterate over each row of the input matrices
 for i = 1:size(n_inc,1)
 % Check condition for each row
-if (dot(n_inc(i,:),r_local(i,:), 2) >= 0) & (dot(n_inc(i,:),z_local(i,:), 2) >= 0)
+if (dot(n_inc(i,:),r_local(i,:), 2) >= 0) && (dot(n_inc(i,:),z_local(i,:), 2) >= 0)
     beta(i) = - acos(dot(n_inc(i,:),z_local(i,:), 2));
-elseif  (dot(n_inc(i,:),r_local(i,:), 2) >= 0) & (dot(n_inc(i,:),z_local(i,:), 2) < 0)
+elseif  (dot(n_inc(i,:),r_local(i,:), 2) >= 0) && (dot(n_inc(i,:),z_local(i,:), 2) < 0)
     beta(i) = +pi - acos(dot(n_inc(i,:),z_local(i,:), 2));
-elseif  (dot(n_inc(i,:),r_local(i,:), 2) < 0) & (dot(n_inc(i,:),z_local(i,:), 2) >= 0)
+elseif  (dot(n_inc(i,:),r_local(i,:), 2) < 0) && (dot(n_inc(i,:),z_local(i,:), 2) >= 0)
     beta(i) =     + acos(dot(n_inc(i,:),z_local(i,:), 2));
 else 
     beta(i) = -pi + acos(dot(n_inc(i,:),z_local(i,:), 2));
@@ -346,7 +438,12 @@ end
 x1 = sin(gamma);
 x2 = cos(beta);
 x3 = cos(psi) .* cos(gamma) .* sin(beta) + sin(gamma) .* cos(beta);
+
+if unitTest
+unitx = ones(sum(1), 1); % JUST FOR TESTING
+else
 unitx = ones(sum(include), 1);
+end
 
 %% 6b. Determine f1, f2, f3
 Tk = [unitx x1  x2  x3  x1.^2    x2.^2    x3.^2    x1.*x2  x2.*x3  x3.*x1  x1.^3    x2.^3    x3.^3    x1.*x2.^2    x2.*x1.^2    x2.*x3.^2    x3.*x2.^2    x3.*x1.^2  x1.*x3.^2  x1.*x2.*x3];
@@ -371,8 +468,17 @@ xi_n = 0.12 * 10^6; % Agarwal verification studies
 % xi_n = rhoC * 9.81 * (894*muInt^3 - 386*muInt^2 + 89*muInt); % initially in N/m³
 
 %% 9. Calculate the system specific alpha_n and alpha_t in the local coordinate frame
-alpha_gen_n = (dot(alpha_gen,n_inc,2)) .* (-n_inc);
-alpha_gen_t = -(alpha_gen + alpha_gen_n);
+alpha_gen_n = zeros(size(n_inc,1),3);
+alpha_gen_t = zeros(size(n_inc,1),3);
+for i = 1:size(n_inc,1)
+    if dot(alpha_gen(i,:),-n_inc(i,:),2)<0
+    alpha_gen_n(i,:) = -dot(alpha_gen(i,:),-n_inc(i,:),2) .* (-n_inc(i,:));
+    alpha_gen_t(i,:) = (alpha_gen(i,:) + alpha_gen_n(i,:));
+    else
+    alpha_gen_n(i,:) = dot(alpha_gen(i,:),-n_inc(i,:),2) .* (-n_inc(i,:));
+    alpha_gen_t(i,:) = (alpha_gen(i,:) - alpha_gen_n(i,:));
+    end
+end
 
 alpha = xi_n .* (alpha_gen_n + min(muSurf .* vecnorm(alpha_gen_n,2,2) ./ vecnorm(alpha_gen_t,2,2),1) .* alpha_gen_t);
 
