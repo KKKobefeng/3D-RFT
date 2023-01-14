@@ -16,13 +16,13 @@ showGeometry = false;
 showDirectionV = false;
 showFQuiver = false;
 showFScatter = false;
-showFScatterxyz = false;
-showAlpha = true;
+showFScatterxyz = true;
+showAlpha = false;
 saveFigures = false;
 unitTest = false;
 
 %% Read .stl file
-TRG = stlread('./Cylinder/Models/CylinderVeryRough.stl'); % possibilities: CylinderFine, Cylinder, CylinderRough, CylinderVeryRough
+TRG = stlread('./Cylinder/Models/Cylinder.stl'); % possibilities: CylinderFine, Cylinder, CylinderRough, CylinderVeryRough
 TRGVisual = stlread('./Cylinder/Models/CylinderVeryRough.stl');
 % Rotate TRG object
 TRG = rotateTriangulationX(TRG, 0);
