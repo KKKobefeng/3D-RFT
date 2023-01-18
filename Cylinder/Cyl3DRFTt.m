@@ -7,23 +7,23 @@ clear all
 
 %% Define inputs - Agarwal verification studies
 linearVelocity = 0.1; % linear velocity in m/s
-angularVelocity = pi; % angular velocity in rad/s
+angularVelocity = 0.25*pi; % angular velocity in rad/s
 rhoC = 1310; % critical density of the sand in kg/m³   
 muInt = 0.21; % internal friction coefficient of the sand
 muSurf = 0.4; % intruder-surface interaction coefficient
 depth = 0.125; % in m
-showGeometry = false;
+showGeometry = true;
 showDirectionV = false;
 showFQuiver = false;
 showFScatter = false;
-showFScatterxyz = true;
+showFScatterxyz = false;
 showAlpha = false;
 saveFigures = false;
 unitTest = false;
 
 %% Read .stl file
 TRG = stlread('./Cylinder/Models/Cylinder.stl'); % possibilities: CylinderFine, Cylinder, CylinderRough, CylinderVeryRough
-TRGVisual = stlread('./Cylinder/Models/CylinderVeryRough.stl');
+TRGVisual = stlread('./Cylinder/Models/Cylinder.stl');
 % Rotate TRG object
 TRG = rotateTriangulationX(TRG, 0);
 TRGVisual = rotateTriangulationX(TRGVisual, 0);
@@ -138,7 +138,7 @@ if showFQuiver
     hold on;
     trimesh(TRGVisual, 'LineWidth', 0.1, 'EdgeColor', '#888888', 'FaceAlpha', 0);
     %trisurf(TRG)
-    q = quiver3(c_inc(:,1), c_inc(:,2), c_inc(:,3), F(:,1), F(:,2), F(:,3),2, 'LineWidth', 1, 'MaxHeadSize', 5);
+    q = quiver3(c_inc(:,1), c_inc(:,2), c_inc(:,3), -F(:,1), -F(:,2), -F(:,3),2, 'LineWidth', 1, 'MaxHeadSize', 5);
     currentColormap = jet;
     SetQuiverColor(q,currentColormap);
     if saveFigures
@@ -479,6 +479,9 @@ for i = 1:size(n_inc,1)
     alpha_gen_t(i,:) = (alpha_gen(i,:) - alpha_gen_n(i,:));
     end
 end
+
+% alpha_gen_n = dot(alpha_gen,-n_inc,2) .* (-n_inc);  % this has some mistake
+% alpha_gen_t = (alpha_gen - alpha_gen_n);  % this might be correct
 
 alpha = xi_n .* (alpha_gen_n + min(muSurf .* vecnorm(alpha_gen_n,2,2) ./ vecnorm(alpha_gen_t,2,2),1) .* alpha_gen_t);
 
