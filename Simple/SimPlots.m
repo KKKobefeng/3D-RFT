@@ -1,5 +1,5 @@
 % Show the tip mesh
-if showGeometry
+if show_geometry
     figure
     hold on
     title ('Tip mesh visualization');
@@ -57,7 +57,7 @@ if showGeometry
 end
 
 
-if showDirectionV
+if show_direction
     % Create a quiver plot with the direction vectors
     figure
     quiver3(points(:,1), points(:,2), points(:,3), vNormVec(:,1), vNormVec(:,2), vNormVec(:,3), 1.25);
@@ -77,7 +77,7 @@ if showDirectionV
     hold off;
 end
 
-if showFQuiver
+if show_f_quiver
     % Plot forces on each point of the mesh (quiver)
     figure;
     title ('Forces acting on each subsurface (quiver)');
@@ -101,7 +101,7 @@ if showFQuiver
     hold off;
 end
 
-if showFScatter
+if show_f_scatter
     % Plot forces on each point of the mesh (scatter)
     figure;
     title ('Forces acting on each subsurface (scatter)');
@@ -126,7 +126,7 @@ if showFScatter
     hold off;
 end
 
-if showFScatterxyz
+if show_f_scatterxyz
     % Plot forces on each point of the mesh (scatter x)
     figure;
     %title ('f_X [N/m^2]');
@@ -212,7 +212,7 @@ if showFScatterxyz
     hold off;
 end
 
-if showAlpha
+if show_alpha
     figure;
     title ('forces alpha_{gen} (quiver)');
     view([45 25])
@@ -279,38 +279,6 @@ if showAlpha
 end
 
 function SetQuiverColor(q,currentColormap,varargin)
-
-%--------------------------------------------------
-% function SetQuiverColor(q,currentColormap)
-%
-% INPUT:
-%   q = handle to quiver plot
-%   currentColormap = e.g. jet;
-% OPTIONAL INPUT ('Field',value):
-%   'range' = [min,max]; % Range of the magnitude in the colorbar
-%                          (used to possibly saturate or expand the color used compared to the vectors)
-%   'mags' = magnitude; % Actual magnitude of the vectors
-%
-% Example:
-%   [x,y] = meshgrid(-2:.2:2,-1:.15:1);
-%   z = x .* exp(-x.^2 - y.^2);
-%   [u,v,w] = surfnorm(x,y,z);
-%   q = quiver3(x,y,z,u,v,w);
-%   mag = 1+3.*rand(size(u));   % Creates number between 1 and 4
-%   colormap(jet);
-%   colorbar;
-%   SetQuiverColor(q,jet,'mags',mag,'range',[-2 8]);  % Color range between -2 8 => all colors are not used
-%   caxis([-2 8]);
-%   set(gca,'Color','k');
-%
-%--------------------------------------------------
-%   Authorship:
-%     This code is heavily based from the answer by the user Suever on Stackoverflow forum
-%     at: https://stackoverflow.com/questions/29632430/quiver3-arrow-color-corresponding-to-magnitude
-%
-%     I, Alexandre De Spiegeleer, only added minor changes to the original answer to have a bit more flexibility.
-%--------------------------------------------------
-
 %// Set default values
 range = [];
 mags = [];

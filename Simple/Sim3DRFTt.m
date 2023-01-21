@@ -2,115 +2,104 @@ close all
 clear all
 
 %% NOTES - TODO
-% Something wrong with distinction of force direction on cylinder
-% 
 
 %% Define inputs - Agarwal verification studies
-linearVelocity = 0.1; % linear velocity in m/s
-angularVelocity = 0; % angular velocity in rad/s
-velocityAngle = 75*pi/180; % Direction angle between x-axis and negative z-axis
-rhoC = 3000; % critical density of the sand in kg/m³   
-muInt = 0.4; % internal friction coefficient of the sand
-muSurf = 0.4; % intruder-surface interaction coefficient
-depth = 0.27+0.05; % in m
-showGeometry = false;
-showDirectionV = false;
-showFQuiver = false;
-showFScatter = false;
-showFScatterxyz = false;
-showAlpha = false;
+linear_velocity = 0.1;  % linear velocity in m/s
+angular_velocity = 0;  % angular velocity in rad/s
+velocity_angle = 75*pi/180;  % Direction angle between x-axis and negative z-axis
+rho_c = 3000;  % critical density of the sand in kg/m³   
+mu_int = 0.4;  % internal friction coefficient of the sand
+mu_surf = 0.4;  % intruder-surface interaction coefficient
+depth = 0.27+0.045;  % in m
+
+%% Plot options
+show_geometry = false;
+show_direction = false;
+show_f_quiver = false;
+show_f_scatter = false;
+show_f_scatterxyz = false;
+show_alpha = false;
 saveFigures = false;
-unitTest = false;
+unit_test = false;
 
 %% Read .stl file
-TRG = stlread('./Simple/Models/Sphere.stl'); % possibilities: CylinderFine, Cylinder, CylinderRough, CylinderVeryRough
-TRGVisual = stlread('./Simple/Models/SphereRough.stl');
-% Rotate TRG object
-TRG = rotateTriangulationX(TRG, 0);
+TRG = stlread('./Simple/Models/Ellipsoid.stl');  % Mesh size for calculation
+TRGVisual = stlread('./Simple/Models/EllipsoidRough.stl');  % Mesh size for force plots
+
+TRG = rotateTriangulationX(TRG, 0);  % Rotate TRG object
 TRGVisual = rotateTriangulationX(TRGVisual, 0);
-% Move the triangulation object so that the lowest point regarding the z-axis is at z = depth
-TRG = moveTriangulationZ(TRG, depth);
+
+TRG = moveTriangulationZ(TRG, depth);  % Align bottom of object with depth input
 TRGVisual = moveTriangulationZ(TRGVisual, depth);
-% Compute the incenter of each triangle in the tip mesh
+
 points = (incenter(TRG)').';
-% Compute the normal of each triangle in the tip mesh
 normals = (faceNormal(TRG)').';
-% Compute the area of each triangle in the tip mesh
 area = (generateArea(TRG.Points', TRG.ConnectivityList')).';
 
-% Compute the vector norm of each normal
-norms = vecnorm(normals, 2, 2);
-% Normalize the normals by dividing each normal by its vector norm
-normals = normals ./ norms;
-
 %% Compute forces using 3D-RFT function
-[c_inc, vNormVec, F, f, forcesX, forcesY, forcesZ, T, torqueX, torqueY, torqueZ, alpha_gen, alpha_gen_n, alpha_gen_t, alpha] = RFT3Dfunc(points, normals, area, angularVelocity, linearVelocity, rhoC, muInt, muSurf, unitTest, velocityAngle);
+[c_inc, vNormVec, F, f, forcesX, forcesY, forcesZ, T, torqueX, torqueY, torqueZ, alpha_gen, alpha_gen_n, alpha_gen_t, alpha] = RFT3Dfunc(points, normals, area, angular_velocity, linear_velocity, rho_c, mu_int, mu_surf, unit_test, velocity_angle);
 
 %% Plots
 SimPlots
 
-function [c_inc, vNormVec, F, f, forcesX, forcesY, forcesZ, T, torqueX, torqueY, torqueZ, alpha_gen, alpha_gen_n, alpha_gen_t, alpha] = RFT3Dfunc(points, normals, area, angularVelocity, linearVelocity, rhoC, muInt, muSurf, unitTest, velocityAngle)
+%% Functions 
+
+function [c_inc, v_norm_vec, F, f, forces_x, forces_y, forces_z, T, torque_x, torque_y, torque_z, alpha_gen, alpha_gen_n, alpha_gen_t, alpha] = RFT3Dfunc(points, normals, area, angular_velocity, linear_velocity, rho_c, mu_int, mu_surf, unit_test, velocity_angle)
 %% 1. Read Tip Data
-pointList = points;
-areaList = area/1000000; % mm² to m²
-normalList = normals;
-depthList = pointList(:,3)/1000; % mm to m
+point_list = points;
+area_list = area/1000000; % mm² to m²
+normal_list = normals;
+depth_list = point_list(:,3)/1000; % mm to m
 
 %% 2. Calc velocity
-nElements = size(pointList, 1);
+nElements = size(point_list, 1);
 
 % Direction Vector
-
-vx = repmat(linearVelocity*1000*cos(velocityAngle),nElements,1);
+vx = repmat(linear_velocity*1000*cos(velocity_angle),nElements,1);
 vy = zeros(nElements, 1);
-vz = repmat(-linearVelocity*1000*sin(velocityAngle),nElements,1);
-vVec = [vx vy vz];
-vNormVec = vVec ./ vecnorm(vVec, 2, 2);
+vz = repmat(-linear_velocity*1000*sin(velocity_angle),nElements,1);
+v_vec = [vx vy vz];
+v_norm_vec = v_vec ./ vecnorm(v_vec, 2, 2);
 
-% Surface normal
-nNormVec = normalList ./ vecnorm(normalList, 2, 2);
+
+
+
+
 
 %% 3. Check conditions
-% logical conditions that determine whether or not to count force on element
-is_leading_edge = dot(nNormVec, vNormVec, 2) > 0;
-is_intruding = pointList(:,3) < 0;
+is_leading_edge = dot(normal_list, v_norm_vec, 2) > 0;
+is_intruding = point_list(:,3) < 0;
 include = is_leading_edge & is_intruding;
 
-% isolate the elements that satisfy this condition for calculation -
+n_inc = normal_list(include,:);
+v_inc = v_norm_vec(include,:);
+a_inc = area_list(include,:);
+c_inc = point_list(include,:);
+d_inc = depth_list(include,:);
 
-n_inc = nNormVec(include,:);
-v_inc = vNormVec(include,:);
-a_inc = areaList(include,:);
-c_inc = pointList(include,:);
-d_inc = depthList(include,:);
-
-if unitTest
-pointsTest = [4032, 4416];
-n_inc = n_inc(pointsTest,:); % REMOVE LATER
-v_inc = v_inc(pointsTest,:); % REMOVE LATER
-a_inc = a_inc(pointsTest,:); % REMOVE LATER
-c_inc = c_inc(pointsTest,:); % REMOVE LATER
-d_inc = d_inc(pointsTest,:); % REMOVE LATER
+if unit_test
+points_test = [4032, 4416];
+n_inc = n_inc(points_test,:);
+v_inc = v_inc(points_test,:);
+a_inc = a_inc(points_test,:);
+c_inc = c_inc(points_test,:);
+d_inc = d_inc(points_test,:);
 end
 
 %% 4. Find local coordinate frame
-if unitTest
-z_local = repmat([0,0,1], numel(d_inc), 1); % JUST FOR TESTING
+if unit_test
+z_local = repmat([0,0,1], numel(d_inc), 1);
 else
-z_local = repmat([0,0,1], sum(include), 1); % reverse g directon (regular z)
+z_local = repmat([0,0,1], sum(include), 1);
 end
 
 r_local = (v_inc - dot(v_inc, z_local, 3) .* z_local) ./ vecnorm(v_inc - dot(v_inc, z_local, 3) .* z_local, 2, 2);
 theta_local = cross(z_local, r_local, 2);
-g_ = -z_local;
 
 %% 5. Find RFT angles (beta, gamma, psi)
 % beta - surface characteristic angle
-% Initialize beta vector
 beta = zeros(size(n_inc,1),1);
-% Iterate over each row of the input matrices
 for i = 1:size(n_inc,1)
-% Check condition for each row
 if (dot(n_inc(i,:),r_local(i,:), 2) >= 0) && (dot(n_inc(i,:),z_local(i,:), 2) >= 0)
     beta(i) = - acos(dot(n_inc(i,:),z_local(i,:), 2));
 elseif  (dot(n_inc(i,:),r_local(i,:), 2) >= 0) && (dot(n_inc(i,:),z_local(i,:), 2) < 0)
@@ -123,11 +112,8 @@ end
 end
 
 % gamma - velocity characteristic angle
-% Initialize gamma vector
 gamma = zeros(size(v_inc,1),1);
-% Iterate over each row of the input matrices
 for i = 1:size(v_inc,1)
-% Check condition for each row
 if dot(v_inc(i,:), z_local(i,:), 2) <= 0
 gamma(i) = acos(dot(v_inc(i,:), r_local(i,:), 2));
 else
@@ -136,14 +122,10 @@ end
 end
 
 % psi - surface characteristic angle
-% Initialize psi vector
 psi = zeros(size(n_inc,1),1);
 nr0_inc = zeros(size(n_inc,1),3);
-% Iterate over each row of the input matrices
 for i = 1:size(n_inc,1)
-% Compute nr0_inc for each row
 nr0_inc(i,:) = (n_inc(i,:) - (dot(n_inc(i,:),z_local(i,:), 2) .* z_local(i,:))) ./ vecnorm(n_inc(i,:) - (dot(n_inc(i,:),z_local(i,:), 2) .* z_local(i,:)),2,2);
-% Check condition for each row
 if vecnorm(n_inc(i,:) - (dot(n_inc(i,:),z_local(i,:), 2) .* z_local(i,:)),2,2) == 0 || dot(nr0_inc(i,:),r_local(i,:),2) == 0
 psi(i) = 0;
 else
@@ -152,20 +134,12 @@ end
 end
 
 %% 6a. Determine x1, x2, x3
-% Local versions of n and v
-% v_inc_local = cos(gamma) .* r_local - sin(gamma) .* z_local;
-% n_inc_local = sin(beta) .* cos(psi) .* r_local + sin(beta) .* sin(psi) .* theta_local - cos(beta) .* z_local;
-
-% y1 = dot(g_, v_inc_local, 2);
-% y2 = dot(g_, n_inc_local, 2);
-% y3 = dot(n_inc_local, v_inc_local, 2);
-
 x1 = sin(gamma);
 x2 = cos(beta);
 x3 = cos(psi) .* cos(gamma) .* sin(beta) + sin(gamma) .* cos(beta);
 
-if unitTest
-unitx = ones(numel(d_inc), 1); % JUST FOR TESTING
+if unit_test
+unitx = ones(numel(d_inc), 1);
 else
 unitx = ones(sum(include), 1);
 end
@@ -189,10 +163,11 @@ alpha_z_gen = -f1 .* cos(beta) - f2 .* sin(gamma) - f3;
 alpha_gen = alpha_r_gen.*r_local + alpha_theta_gen.*theta_local + alpha_z_gen.*z_local;
 
 %% 8. Estimate media specific scaling factor xi_n
-% xi_n = 0.92 * 10^6; % Agarwal verification studies
-xi_n = rhoC * 9.81 * (894*muInt^3 - 386*muInt^2 + 89*muInt); % initially in N/m³
+xi_n = 0.92 * 10^6; % Agarwal verification studies
+% xi_n = rhoC * 9.81 * (894*muInt^3 - 386*muInt^2 + 89*muInt); % initially in N/m³
 
 %% 9. Calculate the system specific alpha_n and alpha_t in the local coordinate frame
+% Correcting minor sign problems
 alpha_gen_n = zeros(size(n_inc,1),3);
 alpha_gen_t = zeros(size(n_inc,1),3);
 for i = 1:size(n_inc,1)
@@ -205,21 +180,14 @@ for i = 1:size(n_inc,1)
     end
 end
 
-% alpha_gen_n = dot(alpha_gen,-n_inc,2) .* (-n_inc);  % this has some mistake
-% alpha_gen_t = (alpha_gen - alpha_gen_n);  % this might be correct
+% original
+% alpha_gen_n = dot(alpha_gen,-n_inc,2) .* (-n_inc);
+% alpha_gen_t = (alpha_gen - alpha_gen_n);
  
-alpha = xi_n .* (alpha_gen_n + min(muSurf .* vecnorm(alpha_gen_n,2,2) ./ vecnorm(alpha_gen_t,2,2),1) .* alpha_gen_t);
+alpha = xi_n .* (alpha_gen_n + min(mu_surf .* vecnorm(alpha_gen_n,2,2) ./ vecnorm(alpha_gen_t,2,2),1) .* alpha_gen_t);
 
 %% 10. Calculate {alpha_x alpha_y alpha_z} as alpha
-% Not needed when alpha_gen_t is calculated with n_inc instead of n_inc_local
-% alpha_global = zeros(size(alpha,1),3); % pre-allocate rotation matrix
-% 
-% for i = 1:size(alpha,1)
-%     % compute rotation axis and angle
-%     rotvec = vrrotvec(n_inc_local(i,:), n_inc(i,:));
-%     R = vrrotvec2mat(rotvec);
-%     alpha_global(i,:) = alpha(i,:) * R;
-% end
+% Not needed
 
 %% 11. multiplying up .* alpha * depth * area
 F = alpha .* abs(d_inc) .* a_inc; % N
@@ -227,74 +195,40 @@ f = F ./ a_inc ./ 1000000; % N/mm²
 T = cross(F,c_inc,2) ./ 1000; % Nmm to Nm
 
 %% 12. sum all rows discrete intregral
-[forcesX] = sum(F(:,1),1);
-[forcesY] = sum(F(:,2),1);
-[forcesZ] = sum(F(:,3),1);
+[forces_x] = sum(F(:,1),1);
+[forces_y] = sum(F(:,2),1);
+[forces_z] = sum(F(:,3),1);
 
-[torqueX] = sum(T(:,1),1);
-[torqueY] = sum(T(:,2),1);
-[torqueZ] = sum(T(:,3),1);
+[torque_x] = sum(T(:,1),1);
+[torque_y] = sum(T(:,2),1);
+[torque_z] = sum(T(:,3),1);
 
 end
 
 function areaarray = generateArea(Points,List)
-    % Initialize the area array with zeros
-    areaarray = zeros(1, size(List, 2));
-
-    % Loop over the triangles
-    for i = 1:size(List, 2)  
-        % Extract the coordinates of the triangle vertices
-        v1 = Points(:, List(1,i));
-        v2 = Points(:, List(2,i));
-        v3 = Points(:, List(3,i));
-
-        % Compute the lengths of the triangle sides
-        a = norm(v1 - v2);
-        b = norm(v2 - v3);
-        c = norm(v1 - v3);
-
-        % Use Heron's formula to compute the area of the triangle
-        s = (a + b + c) / 2;
-        AreaTemp = sqrt(s * (s - a) * (s - b) * (s - c));
-
-        % Append the area to the area array
-        areaarray(i) = AreaTemp;
-    end
+    % Compute the side lengths of the triangles once
+    a = vecnorm(Points(:, List(1,:)) - Points(:, List(2,:)));
+    b = vecnorm(Points(:, List(2,:)) - Points(:, List(3,:)));
+    c = vecnorm(Points(:, List(1,:)) - Points(:, List(3,:)));
+    s = (a + b + c) / 2;
+    areaarray = sqrt(s .* (s - a) .* (s - b) .* (s - c));
 end
 
 function TRG = rotateTriangulationX(TRG, theta)
-% ROTATETRIANGULATIONX Rotates a triangulation object around the x-axis.
-%   TRG = rotateTriangulationX(TRG, THETA) rotates the triangulation object TRG
-%   around the x-axis by an angle THETA (in degrees). TRG is a triangulation
-%   object containing points and a connectivity list. The function returns the
-%   rotated triangulation object.
-
-% Create the rotation matrix
-R = [1 0 0; 0 cosd(theta) -sind(theta); 0 sind(theta) cosd(theta)];
-
-% Rotate the points in the triangulation object
-Points = TRG.Points * R;
-
-% Create a new triangulation object with the rotated points and the same connectivity list
-TRG = triangulation(TRG.ConnectivityList, Points);
+    % Create the rotation matrix
+    R = [1 0 0; 0 cosd(theta) -sind(theta); 0 sind(theta) cosd(theta)];
+    % Rotate the points in the triangulation object
+    Points = TRG.Points * R;
+    
+    % Create a new triangulation object with the rotated points and the same connectivity list
+    TRG = triangulation(TRG.ConnectivityList, Points);
 end
 
 function TRG = moveTriangulationZ(TRG, depth)
-
-% MOVETRIANGULATIONZ Moves a triangulation object so that the lowest point regarding the z-axis is at z=0.
-%   TRG = MOVETRIANGULATIONZ(TRG) moves the triangulation object TRG so that the
-%   lowest point regarding the z-axis is at z=0. TRG is a triangulation object
-%   containing points and a connectivity list. The function returns the moved
-%   triangulation object.
-
-% Find the minimum z-coordinate
-minZ = min(TRG.Points(:, 3));
-
-% Shift the points in the z-direction
-Points = TRG.Points;
-Points(:, 3) = Points(:, 3) - minZ - depth*1000;
-
-% Create a new triangulation object with the shifted points and the same connectivity list
-TRG = triangulation(TRG.ConnectivityList, Points);
+    minZ = min(TRG.Points(:, 3));
+    Points = TRG.Points;
+    Points(:, 3) = Points(:, 3) - minZ - depth*1000;
+    
+    % Create a new triangulation object with the shifted points and the same connectivity list
+    TRG = triangulation(TRG.ConnectivityList, Points);
 end
-
