@@ -6,7 +6,7 @@ clear all
 %% Define inputs - Agarwal verification studies
 linear_velocity = 0.1;  % linear velocity in m/s
 angular_velocity = 0;  % angular velocity in rad/s
-velocity_angle = 75*pi/180;  % Direction angle between x-axis and negative z-axis
+velocity_angle = 0*pi/180;  % Direction angle between x-axis and negative z-axis
 rho_c = 3000;  % critical density of the sand in kg/m³   
 mu_int = 0.4;  % internal friction coefficient of the sand
 mu_surf = 0.4;  % intruder-surface interaction coefficient
@@ -18,13 +18,13 @@ show_direction = false;
 show_f_quiver = false;
 show_f_scatter = false;
 show_f_scatterxyz = false;
-show_alpha = false;
+show_alpha = true;
 saveFigures = false;
 unit_test = false;
 
 %% Read .stl file
-TRG = stlread('./Simple/Models/Ellipsoid.stl');  % Mesh size for calculation
-TRGVisual = stlread('./Simple/Models/EllipsoidRough.stl');  % Mesh size for force plots
+TRG = stlread('./Simple/Models/Sphere.stl');  % Mesh size for calculation
+TRGVisual = stlread('./Simple/Models/SphereRough.stl');  % Mesh size for force plots
 
 TRG = rotateTriangulationX(TRG, 0);  % Rotate TRG object
 TRGVisual = rotateTriangulationX(TRGVisual, 0);
@@ -37,7 +37,7 @@ normals = (faceNormal(TRG)').';
 area = (generateArea(TRG.Points', TRG.ConnectivityList')).';
 
 %% Compute forces using 3D-RFT function
-[c_inc, vNormVec, F, f, forcesX, forcesY, forcesZ, T, torqueX, torqueY, torqueZ, alpha_gen, alpha_gen_n, alpha_gen_t, alpha] = RFT3Dfunc(points, normals, area, angular_velocity, linear_velocity, rho_c, mu_int, mu_surf, unit_test, velocity_angle);
+[c_inc, v_norm_vec, F, f, forces_x, forces_y, forces_z, T, torque_x, torque_y, torque_z, alpha_gen, alpha_gen_n, alpha_gen_t, alpha] = RFT3Dfunc(points, normals, area, angular_velocity, linear_velocity, rho_c, mu_int, mu_surf, unit_test, velocity_angle);
 
 %% Plots
 SimPlots
@@ -163,8 +163,8 @@ alpha_z_gen = -f1 .* cos(beta) - f2 .* sin(gamma) - f3;
 alpha_gen = alpha_r_gen.*r_local + alpha_theta_gen.*theta_local + alpha_z_gen.*z_local;
 
 %% 8. Estimate media specific scaling factor xi_n
-xi_n = 0.92 * 10^6; % Agarwal verification studies
-% xi_n = rhoC * 9.81 * (894*muInt^3 - 386*muInt^2 + 89*muInt); % initially in N/m³
+% xi_n = 0.92 * 10^6; % Agarwal verification studies
+xi_n = rho_c * 9.81 * (894*mu_int^3 - 386*mu_int^2 + 89*mu_int); % initially in N/m³
 
 %% 9. Calculate the system specific alpha_n and alpha_t in the local coordinate frame
 % Correcting minor sign problems

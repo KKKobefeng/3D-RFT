@@ -7,30 +7,31 @@ clear all
 %% Define inputs - Agarwal verification studies
 folder = 'Cylinder';  % Cylinder, Simple, or RobotTip
 object = 'Cylinder';  % Name of stl
-triangle_size_calculation = 'Rough';  % 'Fine', 'Normal', 'Rough', 'VeryRough'
+triangle_size_calculation = 'Normal';  % 'Fine', 'Normal', 'Rough', 'VeryRough'
 triangle_size_visualization = 'Rough';  % 'Fine', 'Normal', 'Rough', 'VeryRough'
 movement = 'vertical';  % vertical or horizontal
 linear_velocity = 0.1;  % linear velocity in m/s
 angular_velocity = pi;  % angular velocity in rad/s
+velocity_angle = 0*pi/180;  % Direction angle between x-axis and negative z-axis
 rho_c = 1310;  % critical density of the sand in kg/m³   
 mu_int = 0.21;  % internal friction coefficient of the sand
 mu_surf = 0.4;  % intruder-surface interaction coefficient
 depth = 0.125;  % in m
 
 %% Plot options
-show_geometry = true;
+show_geometry = false;
 show_direction = false;
 show_f_quiver = false;
 show_f_scatter = false;
-show_f_scatterxyz = false;
+show_f_scatterxyz = true;
 show_alpha = false;
 saveFigures = false;
 unit_test = false;
 
 
 %% Read .stl file
-TRG = stlread(strcat('./', folder, '/Models/Cylinder.stl'));  % Mesh size for calculation
-TRGVisual = stlread(strcat('./', folder, '/Models/CylinderVeryRough.stl'));  % Mesh size for force plots
+TRG = stlread(strcat('./', folder, '/Models/', object, triangle_size_calculation, '.stl'));  % Mesh size for calculation
+TRGVisual = stlread(strcat('./', folder, '/Models/', object, triangle_size_visualization, '.stl'));  % Mesh size for force plots
 
 TRG = rotateTriangulationX(TRG, 0);  % Rotate TRG object
 TRGVisual = rotateTriangulationX(TRGVisual, 0);
@@ -43,14 +44,14 @@ normals = (faceNormal(TRG)').';
 area = (generateArea(TRG.Points', TRG.ConnectivityList')).';
 
 %% Compute forces using 3D-RFT function
-[c_inc, vNormVec, F, f, forcesX, forcesY, forcesZ, T, torqueX, torqueY, torqueZ, alpha_gen, alpha_gen_n, alpha_gen_t, alpha] = RFT3Dfunc(points, normals, area, movement, angular_velocity, linear_velocity, rho_c, mu_int, mu_surf, unit_test);
+[c_inc, v_norm_vec, F, f, forces_x, forces_y, forces_z, T, torque_x, torque_y, torque_z, alpha_gen, alpha_gen_n, alpha_gen_t, alpha] = RFT3Dfunc(points, normals, area, movement, angular_velocity, linear_velocity, velocity_angle, rho_c, mu_int, mu_surf, unit_test);
 
 %% Plots
-Plots
+RFTPlots
 
 %% Functions
 
-function [c_inc, v_norm_vec, F, f, forces_x, forces_y, forces_z, T, torque_x, torque_y, torque_z, alpha_gen, alpha_gen_n, alpha_gen_t, alpha] = RFT3Dfunc(points, normals, area, movement, angular_velocity, linear_velocity, rho_c, mu_int, mu_surf, unit_test)
+function [c_inc, v_norm_vec, F, f, forces_x, forces_y, forces_z, T, torque_x, torque_y, torque_z, alpha_gen, alpha_gen_n, alpha_gen_t, alpha] = RFT3Dfunc(points, normals, area, movement, angular_velocity, linear_velocity, velocity_angle, rho_c, mu_int, mu_surf, unit_test)
 %% 1. Read Tip Data
 point_list = points;
 area_list = area/1000000; % mm² to m²
@@ -179,8 +180,8 @@ alpha_z_gen = -f1 .* cos(beta) - f2 .* sin(gamma) - f3;
 alpha_gen = alpha_r_gen.*r_local + alpha_theta_gen.*theta_local + alpha_z_gen.*z_local;
 
 %% 8. Estimate media specific scaling factor xi_n
-xi_n = 0.12 * 10^6; % Agarwal verification studies
-% xi_n = rhoC * 9.81 * (894*muInt^3 - 386*muInt^2 + 89*muInt); % initially in N/m³
+% xi_n = 0.12 * 10^6; % Agarwal verification studies
+xi_n = rho_c * 9.81 * (894*mu_int^3 - 386*mu_int^2 + 89*mu_int); % initially in N/m³
 
 %% 9. Calculate the system specific alpha_n and alpha_t in the local coordinate frame
 % Correcting minor sign problems
