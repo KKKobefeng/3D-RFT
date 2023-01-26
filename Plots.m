@@ -14,7 +14,7 @@ if show_geometry
     axis on;
     if saveFigures
     set(gcf,'PaperPositionMode','auto')
-    print(gcf, '-dpdf', '-r300', '-vector', './Cylinder/Figures/visual_mesh.pdf');
+    print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/visual_mesh.pdf'));
     end
     hold off;
 
@@ -32,7 +32,7 @@ if show_geometry
     axis on
     if saveFigures
     set(gcf,'PaperPositionMode','auto')
-    print(gcf, '-dpdf', '-r300', '-vector', './Cylinder/Figures/visual_normals.pdf');
+    print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/visual_normals.pdf'));
     end
     hold off;
 
@@ -51,7 +51,7 @@ if show_geometry
     scatter3(points(:,1), points(:,2), points(:,3), 5, 'filled');
     if saveFigures
     set(gcf,'PaperPositionMode','auto')
-    print(gcf, '-dpdf', '-r300', '-vector', './Cylinder/Figures/visual_points.pdf');
+    print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/visual_points.pdf'));
     end
     hold off;
 end
@@ -71,7 +71,7 @@ if show_direction
     axis on;
     if saveFigures
     set(gcf,'PaperPositionMode','auto')
-    print(gcf, '-dpdf', '-r300', '-vector', './Cylinder/Figures/visual_direction_vectors.pdf');
+    print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/visual_direction_vectors.pdf'));
     end
     hold off;
 end
@@ -95,7 +95,7 @@ if show_f_quiver
     SetQuiverColor(q,currentColormap);
     if saveFigures
     set(gcf,'PaperPositionMode','auto')
-    print(gcf, '-dpdf', '-r300', '-vector', './Cylinder/Figures/forces_quiver.pdf');
+    print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/forces_quiver.pdf'));
     end
     hold off;
 end
@@ -120,7 +120,7 @@ if show_f_scatter
     colorbar;
     if saveFigures
     set(gcf,'PaperPositionMode','auto')
-    print(gcf, '-dpdf', '-r300', '-vector', './Cylinder/Figures/forces_scatter.pdf');
+    print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/forces_scatter.pdf'));
     end
     hold off;
 end
@@ -150,7 +150,7 @@ if show_f_scatterxyz
     c.Location = 'northoutside';
     if saveFigures
     set(gcf,'PaperPositionMode','auto')
-    print(gcf, '-dpdf', '-r300', '-vector', './Cylinder/Figures/forces_scatter_x.pdf');
+    print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/forces_scatter_x.pdf'));
     end
     hold off;
 
@@ -178,7 +178,7 @@ if show_f_scatterxyz
     c.Location = 'northoutside';
     if saveFigures
     set(gcf,'PaperPositionMode','auto')
-    print(gcf, '-dpdf', '-r300', '-vector', './Cylinder/Figures/forces_scatter_y.pdf');
+    print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/forces_scatter_y.pdf'));
     end
     hold off;
 
@@ -206,7 +206,7 @@ if show_f_scatterxyz
     c.Location = 'northoutside';
     if saveFigures
     set(gcf,'PaperPositionMode','auto')
-    print(gcf, '-dpdf', '-r300', '-vector', './Cylinder/Figures/forces_scatter_z.pdf');
+    print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/forces_scatter_z.pdf'));
     end
     hold off;
 end
@@ -229,7 +229,7 @@ if show_alpha
     SetQuiverColor(q,currentColormap);
     if saveFigures
     set(gcf,'PaperPositionMode','auto')
-    print(gcf, '-dpdf', '-r300', '-vector', './Cylinder/Figures/alpha_gen_quiver.pdf');
+    print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/alpha_gen_quiver.pdf'));
     end
     hold off;
 
@@ -250,7 +250,7 @@ if show_alpha
     SetQuiverColor(q,currentColormap);
     if saveFigures
     set(gcf,'PaperPositionMode','auto')
-    print(gcf, '-dpdf', '-r300', '-vector', './Cylinder/Figures/alpha_gen_n_quiver.pdf');
+    print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/alpha_gen_n_quiver.pdf'));
     end
     hold off;
 
@@ -271,7 +271,7 @@ if show_alpha
     SetQuiverColor(q,currentColormap);
     if saveFigures
     set(gcf,'PaperPositionMode','auto')
-    print(gcf, '-dpdf', '-r300', '-vector', './Cylinder/Figures/alpha_gen_t_quiver.pdf');
+    print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/alpha_gen_t_quiver.pdf'));
     end
     hold off;
 

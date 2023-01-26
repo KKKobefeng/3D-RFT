@@ -5,7 +5,10 @@ clear all
 % Generic Function impl
 
 %% Define inputs - Agarwal verification studies
-object = 'Cylinder';  % Cylinder, Simple, or RobotTip
+folder = 'Cylinder';  % Cylinder, Simple, or RobotTip
+object = 'Cylinder';  % Name of stl
+triangle_size_calculation = 'Rough';  % 'Fine', 'Normal', 'Rough', 'VeryRough'
+triangle_size_visualization = 'Rough';  % 'Fine', 'Normal', 'Rough', 'VeryRough'
 movement = 'vertical';  % vertical or horizontal
 linear_velocity = 0.1;  % linear velocity in m/s
 angular_velocity = pi;  % angular velocity in rad/s
@@ -15,19 +18,19 @@ mu_surf = 0.4;  % intruder-surface interaction coefficient
 depth = 0.125;  % in m
 
 %% Plot options
-show_geometry = false;
+show_geometry = true;
 show_direction = false;
 show_f_quiver = false;
 show_f_scatter = false;
-show_f_scatterxyz = true;
+show_f_scatterxyz = false;
 show_alpha = false;
 saveFigures = false;
 unit_test = false;
 
 
 %% Read .stl file
-TRG = stlread(strcat('./', object, '/Models/Cylinder.stl'));  % Mesh size for calculation
-TRGVisual = stlread(strcat('./', object, '/Models/CylinderVeryRough.stl'));  % Mesh size for force plots
+TRG = stlread(strcat('./', folder, '/Models/Cylinder.stl'));  % Mesh size for calculation
+TRGVisual = stlread(strcat('./', folder, '/Models/CylinderVeryRough.stl'));  % Mesh size for force plots
 
 TRG = rotateTriangulationX(TRG, 0);  % Rotate TRG object
 TRGVisual = rotateTriangulationX(TRGVisual, 0);
@@ -40,14 +43,14 @@ normals = (faceNormal(TRG)').';
 area = (generateArea(TRG.Points', TRG.ConnectivityList')).';
 
 %% Compute forces using 3D-RFT function
-[c_inc, vNormVec, F, f, forcesX, forcesY, forcesZ, T, torqueX, torqueY, torqueZ, alpha_gen, alpha_gen_n, alpha_gen_t, alpha] = RFT3Dfunc(points, normals, area, angular_velocity, linear_velocity, rho_c, mu_int, mu_surf, unit_test);
+[c_inc, vNormVec, F, f, forcesX, forcesY, forcesZ, T, torqueX, torqueY, torqueZ, alpha_gen, alpha_gen_n, alpha_gen_t, alpha] = RFT3Dfunc(points, normals, area, movement, angular_velocity, linear_velocity, rho_c, mu_int, mu_surf, unit_test);
 
 %% Plots
 Plots
 
 %% Functions
 
-function [c_inc, v_norm_vec, F, f, forces_x, forces_y, forces_z, T, torque_x, torque_y, torque_z, alpha_gen, alpha_gen_n, alpha_gen_t, alpha] = RFT3Dfunc(points, normals, area, angular_velocity, linear_velocity, rho_c, mu_int, mu_surf, unit_test)
+function [c_inc, v_norm_vec, F, f, forces_x, forces_y, forces_z, T, torque_x, torque_y, torque_z, alpha_gen, alpha_gen_n, alpha_gen_t, alpha] = RFT3Dfunc(points, normals, area, movement, angular_velocity, linear_velocity, rho_c, mu_int, mu_surf, unit_test)
 %% 1. Read Tip Data
 point_list = points;
 area_list = area/1000000; % mm² to m²
@@ -57,17 +60,27 @@ depth_list = point_list(:,3)/1000; % mm to m
 %% 2. Calc velocity
 nElements = size(point_list, 1);
 
-% Direction Vector
-vcor = [0; 0; -linear_velocity*1000];
+if strcmp(movement, 'vertical')
+    % Direction Vector
+    vcor = [0; 0; -linear_velocity*1000];
+    
+    r_list = sqrt(point_list(:,1) .^ 2 + point_list(:,2) .^ 2);
+    angle_list = atan2(point_list(:,2), point_list(:,1));
+    
+    vx = sin(angle_list) .* r_list .* angular_velocity + vcor(1);
+    vy = -cos(angle_list) .* r_list .* angular_velocity + vcor(2);
+    vz = zeros(nElements, 1) + vcor(3);
+    v_vec = [vx vy vz];
+    v_norm_vec = v_vec ./ vecnorm(v_vec, 2, 2);
 
-r_list = sqrt(point_list(:,1) .^ 2 + point_list(:,2) .^ 2);
-angle_list = atan2(point_list(:,2), point_list(:,1));
-
-vx = sin(angle_list) .* r_list .* angular_velocity + vcor(1);
-vy = -cos(angle_list) .* r_list .* angular_velocity + vcor(2);
-vz = zeros(nElements, 1) + vcor(3);
-v_vec = [vx vy vz];
-v_norm_vec = v_vec ./ vecnorm(v_vec, 2, 2);
+elseif strcmp(movement, 'horizontal')
+    % Direction Vector
+    vx = repmat(linear_velocity*1000*cos(velocity_angle),nElements,1);
+    vy = zeros(nElements, 1);
+    vz = repmat(-linear_velocity*1000*sin(velocity_angle),nElements,1);
+    v_vec = [vx vy vz];
+    v_norm_vec = v_vec ./ vecnorm(v_vec, 2, 2);
+end
 
 %% 3. Check conditions
 is_leading_edge = dot(normal_list, v_norm_vec, 2) > 0;
