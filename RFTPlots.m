@@ -14,7 +14,7 @@ if show_geometry
     axis on;
     if saveFigures
     set(gcf,'PaperPositionMode','auto')
-    print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/visual_mesh.pdf'));
+    print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/visual_mesh_', object, '.pdf'));
     end
     hold off;
 
@@ -32,7 +32,7 @@ if show_geometry
     axis on
     if saveFigures
     set(gcf,'PaperPositionMode','auto')
-    print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/visual_normals.pdf'));
+    print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/visual_normals_', object, '.pdf'));
     end
     hold off;
 
@@ -51,7 +51,7 @@ if show_geometry
     scatter3(points(:,1), points(:,2), points(:,3), 5, 'filled');
     if saveFigures
     set(gcf,'PaperPositionMode','auto')
-    print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/visual_points.pdf'));
+    print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/visual_points_', object, '.pdf'));
     end
     hold off;
 end
@@ -59,7 +59,7 @@ end
 if show_direction
     % Create a quiver plot with the direction vectors
     figure
-    quiver3(points(:,1), points(:,2), points(:,3), vNormVec(:,1), vNormVec(:,2), vNormVec(:,3), 1.25);
+    quiver3(points(:,1), points(:,2), points(:,3), v_norm_vec(:,1), v_norm_vec(:,2), v_norm_vec(:,3), 1.25);
     title ('Direction vectors of rotation and translation');
     colormap summer;
     view([45 25])
@@ -71,7 +71,7 @@ if show_direction
     axis on;
     if saveFigures
     set(gcf,'PaperPositionMode','auto')
-    print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/visual_direction_vectors.pdf'));
+    print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/visual_direction_vectors_', object, '.pdf'));
     end
     hold off;
 end
@@ -95,7 +95,7 @@ if show_f_quiver
     SetQuiverColor(q,currentColormap);
     if saveFigures
     set(gcf,'PaperPositionMode','auto')
-    print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/forces_quiver.pdf'));
+    print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/forces_quiver_', object, '.pdf'));
     end
     hold off;
 end
@@ -120,7 +120,7 @@ if show_f_scatter
     colorbar;
     if saveFigures
     set(gcf,'PaperPositionMode','auto')
-    print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/forces_scatter.pdf'));
+    print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/forces_scatter_', object, '.pdf'));
     end
     hold off;
 end
@@ -150,7 +150,7 @@ if show_f_scatterxyz
     c.Location = 'northoutside';
     if saveFigures
     set(gcf,'PaperPositionMode','auto')
-    print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/forces_scatter_x.pdf'));
+    print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/forces_scatter_x_', object, '.pdf'));
     end
     hold off;
 
@@ -178,7 +178,7 @@ if show_f_scatterxyz
     c.Location = 'northoutside';
     if saveFigures
     set(gcf,'PaperPositionMode','auto')
-    print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/forces_scatter_y.pdf'));
+    print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/forces_scatter_y_', object, '.pdf'));
     end
     hold off;
 
@@ -206,7 +206,7 @@ if show_f_scatterxyz
     c.Location = 'northoutside';
     if saveFigures
     set(gcf,'PaperPositionMode','auto')
-    print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/forces_scatter_z.pdf'));
+    print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/forces_scatter_z_', object, '.pdf'));
     end
     hold off;
 end
@@ -229,7 +229,7 @@ if show_alpha
     SetQuiverColor(q,currentColormap);
     if saveFigures
     set(gcf,'PaperPositionMode','auto')
-    print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/alpha_gen_quiver.pdf'));
+    print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/alpha_gen_quiver_', object, '.pdf'));
     end
     hold off;
 
@@ -250,7 +250,7 @@ if show_alpha
     SetQuiverColor(q,currentColormap);
     if saveFigures
     set(gcf,'PaperPositionMode','auto')
-    print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/alpha_gen_n_quiver.pdf'));
+    print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/alpha_gen_n_quiver_', object, '.pdf'));
     end
     hold off;
 
@@ -271,7 +271,7 @@ if show_alpha
     SetQuiverColor(q,currentColormap);
     if saveFigures
     set(gcf,'PaperPositionMode','auto')
-    print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/alpha_gen_t_quiver.pdf'));
+    print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/alpha_gen_t_quiver_', object, '.pdf'));
     end
     hold off;
 

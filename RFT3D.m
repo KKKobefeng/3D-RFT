@@ -5,14 +5,14 @@ clear all
 % Generic Function impl
 
 %% Define inputs - Agarwal verification studies
-folder = 'Cylinder';  % Cylinder, Simple, or RobotTip
-object = 'Cylinder';  % Name of stl
-triangle_size_calculation = 'Normal';  % 'Fine', 'Normal', 'Rough', 'VeryRough'
-triangle_size_visualization = 'Rough';  % 'Fine', 'Normal', 'Rough', 'VeryRough'
+folder = 'cylinder';  % Cylinder, Simple, or RobotTip
+object = 'cylinder';  % Name of stl
+triangle_size_calculation = 'normal';  % 'Fine', 'Normal', 'Rough', 'VeryRough'
+triangle_size_visualization = 'rough';  % 'Fine', 'Normal', 'Rough', 'VeryRough'
 movement = 'vertical';  % vertical or horizontal
 linear_velocity = 0.1;  % linear velocity in m/s
 angular_velocity = pi;  % angular velocity in rad/s
-velocity_angle = 0*pi/180;  % Direction angle between x-axis and negative z-axis
+velocity_angle = 15*pi/180;  % Direction angle between x-axis and negative z-axis
 rho_c = 1310;  % critical density of the sand in kg/m³   
 mu_int = 0.21;  % internal friction coefficient of the sand
 mu_surf = 0.4;  % intruder-surface interaction coefficient
@@ -22,10 +22,13 @@ depth = 0.125;  % in m
 show_geometry = false;
 show_direction = false;
 show_f_quiver = false;
-show_f_scatter = false;
-show_f_scatterxyz = true;
 show_alpha = false;
+
+show_f_scatter = true;
+show_f_scatterxyz = true;
+
 saveFigures = false;
+
 unit_test = false;
 
 
