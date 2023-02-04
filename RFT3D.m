@@ -2,7 +2,6 @@ close all
 clear all
 
 %% NOTES - TODO
-% Generic Function impl
 
 %% Define inputs - Agarwal verification studies
 folder = 'Cylinder';  % Cylinder, Simple, or RobotTip
