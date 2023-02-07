@@ -11,7 +11,7 @@ triangle_size_visualization = 'rough';  % 'Fine', 'Normal', 'Rough', 'VeryRough'
 movement = 'vertical';  % vertical or horizontal
 linear_velocity = 0.1;  % linear velocity in m/s
 angular_velocity = 1*pi;  % angular velocity in rad/s
-velocity_angle = 15*pi/180;  % Direction angle between x-axis and negative z-axis
+velocity_angle = 0*pi/180;  % Direction angle between x-axis and negative z-axis
 rho_c = 1310;  % critical density of the sand in kg/m³   
 mu_int = 0.21;  % internal friction coefficient of the sand
 mu_surf = 0.4;  % intruder-surface interaction coefficient
@@ -24,9 +24,9 @@ show_f_quiver = false;
 show_alpha = false;
 
 show_f_scatter = false;
-show_f_scatterxyz = false;
+show_f_scatterxyz = true;
 
-show_linear_f = true;
+show_linear_f = false;
 
 saveFigures = false;
 
@@ -183,8 +183,8 @@ alpha_z_gen = -f1 .* cos(beta) - f2 .* sin(gamma) - f3;
 alpha_gen = alpha_r_gen.*r_local + alpha_theta_gen.*theta_local + alpha_z_gen.*z_local;
 
 %% 8. Estimate media specific scaling factor xi_n
-xi_n = 0.0815 * 10^6; % Agarwal verification studies - same values of f for xi_n = 0.08
-% xi_n = rho_c * 9.81 * (894*mu_int^3 - 386*mu_int^2 + 89*mu_int); % initially in N/m³
+%xi_n = 0.082 * 10^6; % Agarwal verification studies - same values of f for xi_n = 0.08
+xi_n = rho_c * 9.81 * (894*mu_int^3 - 386*mu_int^2 + 89*mu_int); % initially in N/m³
 
 %% 9. Calculate the system specific alpha_n and alpha_t in the local coordinate frame
 % Correcting minor sign problems

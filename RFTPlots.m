@@ -281,12 +281,8 @@ if show_linear_f
     % Plot linear graph forces - depth
     x_depth = [0.1 0.1 0.1];
     y_forces = [forces_x forces_y forces_z];
-    y_forces_agarwal = [0 0 42.55];  % pi --> 42.55 ; 0.5pi --> 53.80 ; 0.25pi --> 59.35
+    y_forces_agarwal = [0 0 59.35];  % pi --> 42.55 ; 0.5pi --> 53.80 ; 0.25pi --> 59.35
     figure;
-    xlabel('Depth [m]');
-    ylabel('Forces [N]');
-    xlim([0 0.1]);
-    grid on;
     for i=1:3
         X = [0 x_depth(i)];
         Y = [0 y_forces_agarwal(i)];
@@ -299,10 +295,45 @@ if show_linear_f
         plot(X, Y, 'LineWidth', 1.5, 'Color', [0.8500, 0.3250, 0.0980], 'LineStyle', ':')  % plot lines
         hold on
     end
+    xlabel('Depth [m]');
+    ylabel('Forces [N]');
+    grid on;
+    xlim([0 0.1]);
+    ylim([-10 100]);
     legend('Agarwal', '', '', 'Hannes', 'Location', 'northwest')
     if saveFigures
     set(gcf,'PaperPositionMode','auto')
     print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/forces_depth_', object, '.pdf'));
+    end
+    hold off;
+
+
+    % Plot linear graph torque - depth
+    x_depth = [0.1 0.1 0.1];
+    y_torque = [torque_x torque_y -torque_z];
+    y_torque_agarwal = [0 0 0.375];  % pi --> 0.831 ; 0.5pi --> 0.644 ; 0.25pi --> 0.375
+    figure;
+    for i=1:3
+        X = [0 x_depth(i)];
+        Y = [0 y_torque_agarwal(i)];
+        plot(X, Y, 'LineWidth', 1.25, 'Color', [0, 0.4470, 0.7410], 'LineStyle', '--') % plot agarwal lines
+        hold on
+    end
+    for i=1:3
+        X = [0 x_depth(i)];
+        Y = [0 y_torque(i)];
+        plot(X, Y, 'LineWidth', 1.5, 'Color', [0.8500, 0.3250, 0.0980], 'LineStyle', ':')  % plot lines
+        hold on
+    end
+    xlabel('Depth [m]');
+    ylabel('Torque [Nm]');
+    xlim([0 0.1]);
+    ylim([-0.1 1.6]);
+    grid on;
+    legend('Agarwal', '', '', 'Hannes', 'Location', 'northwest')
+    if saveFigures
+    set(gcf,'PaperPositionMode','auto')
+    print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/torque_depth_', object, '.pdf'));
     end
     hold off;
 end
