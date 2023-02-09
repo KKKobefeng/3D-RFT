@@ -4,27 +4,27 @@ clear all
 %% NOTES - TODO
 
 %% Define inputs - Agarwal verification studies
-folder = 'robottip';  % Cylinder, Simple, PlateAnchor or RobotTip
-object = 'tipnr1';  % Name of stl
-triangle_size_calculation = 'fine';  % 'Fine', 'Normal', 'Rough', 'VeryRough'
+folder = 'plateanchor';  % Cylinder, Simple, PlateAnchor or RobotTip
+object = 'plateanchor';  % Name of stl
+triangle_size_calculation = 'normal';  % 'Fine', 'Normal', 'Rough', 'VeryRough'
 triangle_size_visualization = 'veryrough';  % 'Fine', 'Normal', 'Rough', 'VeryRough'
-movement = 'vertical';  % vertical or horizontal
+movement = 'horizontal';  % vertical or horizontal
 linear_velocity = 0.01;  % linear velocity in m/s
 angular_velocity = 1*pi;  % angular velocity in rad/s
-velocity_angle = 30*pi/180;  % Direction angle between x-axis and negative z-axis
-rho_c = 1500;  % bulk density of the sand in kg/m³   
-mu_int = 0.4;  % internal friction coefficient of the sand
-mu_surf = 0.4;  % intruder-surface interaction coefficient
+velocity_angle = -90*pi/180;  % Direction angle between x-axis and negative z-axis
+rho_c = 1673;  % bulk density of the sand in kg/m³   
+mu_int = 0.83;  % internal friction coefficient of the sand
+mu_surf = 0.99;  % intruder-surface interaction coefficient
 gravity = 9.81;  % gravity in m/s²
-depth = 0.30;  % in m
+depth = 1.1 + 0.1;  % in m
 
 %% Plot options
 show_geometry = false;
 show_direction = false;
-show_f_quiver = false;
+show_f_quiver = true;
 show_alpha = false;
 
-show_f_scatter = true;
+show_f_scatter = false;
 show_f_scatterxyz = false;
 
 show_linear_f = false;
@@ -48,14 +48,14 @@ normals = (faceNormal(TRG)').';
 area = (generateArea(TRG.Points', TRG.ConnectivityList')).';
 
 %% Compute forces using 3D-RFT function
-[c_inc, v_norm_vec, F, f, forces_x, forces_y, forces_z, forces, friction_add, T, torque_x, torque_y, torque_z, alpha_gen, alpha_gen_n, alpha_gen_t, alpha] = RFT3Dfunc(points, normals, area, movement, angular_velocity, linear_velocity, velocity_angle, rho_c, mu_int, mu_surf, gravity, unit_test);
+[c_inc, v_norm_vec, F, f, forces_x, forces_y, forces_z, forces, T, torque_x, torque_y, torque_z, alpha_gen, alpha_gen_n, alpha_gen_t, alpha] = RFT3Dfunc(points, normals, area, movement, angular_velocity, linear_velocity, velocity_angle, rho_c, mu_int, mu_surf, gravity, unit_test);
 
 %% Plots
 RFTPlots
 
 %% Functions
 
-function [c_inc, v_norm_vec, F, f, forces_x, forces_y, forces_z, forces, friction_add, T, torque_x, torque_y, torque_z, alpha_gen, alpha_gen_n, alpha_gen_t, alpha] = RFT3Dfunc(points, normals, area, movement, angular_velocity, linear_velocity, velocity_angle, rho_c, mu_int, mu_surf, gravity, unit_test)
+function [c_inc, v_norm_vec, F, f, forces_x, forces_y, forces_z, forces, T, torque_x, torque_y, torque_z, alpha_gen, alpha_gen_n, alpha_gen_t, alpha] = RFT3Dfunc(points, normals, area, movement, angular_velocity, linear_velocity, velocity_angle, rho_c, mu_int, mu_surf, gravity, unit_test)
 %% 1. Read Tip Data
 tic
 point_list = points;
