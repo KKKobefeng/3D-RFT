@@ -4,18 +4,19 @@ clear all
 %% NOTES - TODO
 
 %% Define inputs - Agarwal verification studies
-folder = 'cylinder';  % Cylinder, Simple, or RobotTip
-object = 'cylinder';  % Name of stl
-triangle_size_calculation = 'normal';  % 'Fine', 'Normal', 'Rough', 'VeryRough'
-triangle_size_visualization = 'rough';  % 'Fine', 'Normal', 'Rough', 'VeryRough'
+folder = 'robottip';  % Cylinder, Simple, PlateAnchor or RobotTip
+object = 'tipnr1';  % Name of stl
+triangle_size_calculation = 'fine';  % 'Fine', 'Normal', 'Rough', 'VeryRough'
+triangle_size_visualization = 'veryrough';  % 'Fine', 'Normal', 'Rough', 'VeryRough'
 movement = 'vertical';  % vertical or horizontal
-linear_velocity = 0.1;  % linear velocity in m/s
+linear_velocity = 0.01;  % linear velocity in m/s
 angular_velocity = 1*pi;  % angular velocity in rad/s
-velocity_angle = 0*pi/180;  % Direction angle between x-axis and negative z-axis
-rho_c = 1310;  % critical density of the sand in kg/m³   
-mu_int = 0.21;  % internal friction coefficient of the sand
+velocity_angle = 30*pi/180;  % Direction angle between x-axis and negative z-axis
+rho_c = 1500;  % bulk density of the sand in kg/m³   
+mu_int = 0.4;  % internal friction coefficient of the sand
 mu_surf = 0.4;  % intruder-surface interaction coefficient
-depth = 0.125;  % in m
+gravity = 9.81;  % gravity in m/s²
+depth = 0.30;  % in m
 
 %% Plot options
 show_geometry = false;
@@ -23,8 +24,8 @@ show_direction = false;
 show_f_quiver = false;
 show_alpha = false;
 
-show_f_scatter = false;
-show_f_scatterxyz = true;
+show_f_scatter = true;
+show_f_scatterxyz = false;
 
 show_linear_f = false;
 
@@ -47,18 +48,19 @@ normals = (faceNormal(TRG)').';
 area = (generateArea(TRG.Points', TRG.ConnectivityList')).';
 
 %% Compute forces using 3D-RFT function
-[c_inc, v_norm_vec, F, f, forces_x, forces_y, forces_z, T, torque_x, torque_y, torque_z, alpha_gen, alpha_gen_n, alpha_gen_t, alpha] = RFT3Dfunc(points, normals, area, movement, angular_velocity, linear_velocity, velocity_angle, rho_c, mu_int, mu_surf, unit_test);
+[c_inc, v_norm_vec, F, f, forces_x, forces_y, forces_z, forces, friction_add, T, torque_x, torque_y, torque_z, alpha_gen, alpha_gen_n, alpha_gen_t, alpha] = RFT3Dfunc(points, normals, area, movement, angular_velocity, linear_velocity, velocity_angle, rho_c, mu_int, mu_surf, gravity, unit_test);
 
 %% Plots
 RFTPlots
 
 %% Functions
 
-function [c_inc, v_norm_vec, F, f, forces_x, forces_y, forces_z, T, torque_x, torque_y, torque_z, alpha_gen, alpha_gen_n, alpha_gen_t, alpha] = RFT3Dfunc(points, normals, area, movement, angular_velocity, linear_velocity, velocity_angle, rho_c, mu_int, mu_surf, unit_test)
+function [c_inc, v_norm_vec, F, f, forces_x, forces_y, forces_z, forces, friction_add, T, torque_x, torque_y, torque_z, alpha_gen, alpha_gen_n, alpha_gen_t, alpha] = RFT3Dfunc(points, normals, area, movement, angular_velocity, linear_velocity, velocity_angle, rho_c, mu_int, mu_surf, gravity, unit_test)
 %% 1. Read Tip Data
+tic
 point_list = points;
 area_list = area/1000000; % mm² to m²
-normal_list = normals;
+normal_vectors = normals;
 depth_list = point_list(:,3)/1000; % mm to m
 
 %% 2. Calc velocity
@@ -87,18 +89,18 @@ elseif strcmp(movement, 'horizontal')
 end
 
 %% 3. Check conditions
-is_leading_edge = dot(normal_list, v_norm_vec, 2) > 0;
+is_leading_edge = dot(normal_vectors, v_norm_vec, 2) >= 0;
 is_intruding = point_list(:,3) < 0;
 include = is_leading_edge & is_intruding;
 
-n_inc = normal_list(include,:);
+n_inc = normal_vectors(include,:);
 v_inc = v_norm_vec(include,:);
 a_inc = area_list(include,:);
 c_inc = point_list(include,:);
 d_inc = depth_list(include,:);
 
 if unit_test
-pointsTest = [122, 353];
+pointsTest = [1, 20];
 n_inc = n_inc(pointsTest,:);
 v_inc = v_inc(pointsTest,:);
 a_inc = a_inc(pointsTest,:);
@@ -184,7 +186,7 @@ alpha_gen = alpha_r_gen.*r_local + alpha_theta_gen.*theta_local + alpha_z_gen.*z
 
 %% 8. Estimate media specific scaling factor xi_n
 %xi_n = 0.082 * 10^6; % Agarwal verification studies - same values of f for xi_n = 0.08
-xi_n = rho_c * 9.81 * (894*mu_int^3 - 386*mu_int^2 + 89*mu_int); % initially in N/m³
+xi_n = rho_c * gravity * (894*mu_int^3 - 386*mu_int^2 + 89*mu_int); % initially in N/m³
 
 %% 9. Calculate the system specific alpha_n and alpha_t in the local coordinate frame
 % Correcting minor sign problems
@@ -203,7 +205,7 @@ end
 % original
 % alpha_gen_n = dot(alpha_gen,-n_inc,2) .* (-n_inc);
 % alpha_gen_t = (alpha_gen - alpha_gen_n);
-
+ 
 alpha = xi_n .* (alpha_gen_n + min(mu_surf .* vecnorm(alpha_gen_n,2,2) ./ vecnorm(alpha_gen_t,2,2),1) .* alpha_gen_t);
 
 %% 10. Calculate {alpha_x alpha_y alpha_z} as alpha
@@ -218,11 +220,12 @@ T = cross(F,c_inc,2) ./ 1000; % Nmm to Nm
 [forces_x] = sum(F(:,1),1);
 [forces_y] = sum(F(:,2),1);
 [forces_z] = sum(F(:,3),1);
+[forces] = sqrt(forces_x^2 + forces_y^2 + forces_z^2);
 
 [torque_x] = sum(T(:,1),1);
 [torque_y] = sum(T(:,2),1);
 [torque_z] = sum(T(:,3),1);
-
+toc
 end
 
 function areaarray = generateArea(Points,List)
