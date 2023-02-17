@@ -4,20 +4,20 @@ clear all
 %% NOTES - TODO
 
 %% Define inputs - Agarwal verification studies
-folder = 'cylinder';  % Cylinder, Simple, PlateAnchor or RobotTip
-object = 'cylinder';  % Name of stl
-triangle_size_calculation = 'veryrough';  % 'Fine', 'Normal', 'Rough', 'VeryRough'
+folder = 'simple';  % Cylinder, Simple, PlateAnchor or RobotTip
+object = 'sphere';  % Name of stl
+triangle_size_calculation = 'fine';  % 'Fine', 'Normal', 'Rough', 'VeryRough'
 triangle_size_visualization = 'veryrough';  % 'Fine', 'Normal', 'Rough', 'VeryRough'
-movement = 'rotation';  % rotation or ''
+rotation = false;  % true or false
 linear_velocity = 0.1;  % linear velocity in m/s
-direction_angle_xz = -90*pi/180;  % angle between direction and x-z-axis
-direction_angle_y = 90*pi/180;  % angle between direction and y-axis
-angular_velocity = [0 0 -1*pi];  % angular velocity in rad/s
-rho_c = 1310;  % bulk density of the sand in kg/m³   
-mu_int = 0.21;  % internal friction coefficient of the sand
-mu_surf = 0.4;  % intruder-surface interaction coefficient
+direction_angle_xz = -75 * pi / 180;  % angle between direction and x-z-axis
+direction_angle_y = 90 * pi / 180;  % angle between direction and y-axis
+angular_velocity = [0, 0, -1 * pi];  % angular velocity in rad/s
+rho_c = 3000;  % bulk density of the sand in kg/m³   
+mu_int = 0.4;  % internal friction coefficient of the sand
+mu_surf = 0.40;  % intruder-surface interaction coefficient
 gravity = 9.81;  % gravity in m/s²
-depth = 0.125;  % in m
+depth = 0.27+0.05;  % in m
 
 direction_vector = [cos(direction_angle_xz) cos(direction_angle_y) sin(direction_angle_xz)];
 
@@ -25,7 +25,7 @@ direction_vector = [cos(direction_angle_xz) cos(direction_angle_y) sin(direction
 show_geometry = false;
 show_direction = false;
 show_f_quiver = false;
-show_alpha = true;
+show_alpha = false;
 
 show_f_scatter = false;
 show_f_scatterxyz = false;
@@ -51,14 +51,14 @@ normals = (faceNormal(TRG)').';
 area = (generateArea(TRG.Points', TRG.ConnectivityList')).';
 
 %% Compute forces using 3D-RFT function
-[c_inc, v_norm_vec, F, f, forces_x, forces_y, forces_z, forces, T, torque_x, torque_y, torque_z, alpha_gen, alpha_gen_n, alpha_gen_t, alpha] = RFT3Dfunc(points, normals, area, movement, angular_velocity, linear_velocity, direction_vector, rho_c, mu_int, mu_surf, gravity, unit_test);
+[c_inc, v_norm_vec, F, f, forces_x, forces_y, forces_z, forces, T, torque_x, torque_y, torque_z, alpha_gen, alpha_gen_n, alpha_gen_t, alpha] = RFT3Dfunc(points, normals, area, rotation, angular_velocity, linear_velocity, direction_vector, rho_c, mu_int, mu_surf, gravity, unit_test);
 
 %% Plots
 RFTPlots
 
 %% Functions
 
-function [c_inc, v_norm_vec, F, f, forces_x, forces_y, forces_z, forces, T, torque_x, torque_y, torque_z, alpha_gen, alpha_gen_n, alpha_gen_t, alpha] = RFT3Dfunc(points, normals, area, movement, angular_velocity, linear_velocity, direction_vector, rho_c, mu_int, mu_surf, gravity, unit_test)
+function [c_inc, v_norm_vec, F, f, forces_x, forces_y, forces_z, forces, T, torque_x, torque_y, torque_z, alpha_gen, alpha_gen_n, alpha_gen_t, alpha] = RFT3Dfunc(points, normals, area, rotation, angular_velocity, linear_velocity, direction_vector, rho_c, mu_int, mu_surf, gravity, unit_test)
 %% 1. Read Tip Data
 tic
 threshold = 1.0e-10;
@@ -73,7 +73,7 @@ nElements = size(point_list, 1);
 vcor = linear_velocity .* direction_vector .* 1000; 
 v_vec = ones(nElements,1) .* vcor ;
 
-if strcmp(movement, 'rotation')
+if rotation
     r_list = [point_list(:,1) point_list(:,2) point_list(:,3)+ones(nElements,1).*100];
     v_sum = cross(ones(nElements,1) .*angular_velocity,r_list)+v_vec;
     v_vec=v_sum;
@@ -97,7 +97,7 @@ c_inc = point_list(include,:);
 d_inc = depth_list(include,:);
 
 if unit_test
-pointsTest = 67;
+pointsTest = [90 180];
 n_inc = n_inc(pointsTest,:);
 v_inc = v_inc(pointsTest,:);
 a_inc = a_inc(pointsTest,:);
@@ -163,26 +163,25 @@ end
 end
 
 %% 6a. Determine x1, x2, x3
-beta = acos(dot(-z_local, n_inc,2));
 
-gamma = asin(dot(-z_local, v_inc,2));
+% beta = acos(dot(-z_local, n_inc,2));
+% gamma = asin(dot(-z_local, v_inc,2));
+% n_dot_v = dot(n_inc, v_inc, 2);
+% for i = 1:size(n_inc,1)
+%     if (vecnorm(n_inc(i,:) - (dot(n_inc(i,:),z_local(i,:), 2) .* z_local(i,:)),2,2) == 0 || dot(nr0_inc(i,:),r_local(i,:),2) == 0)
+%         psi(i) = 0;
+%     else
+%         psi(i) = atan2(sin(beta(i,:))*sin(gamma(i,:)), n_dot_v(i,:) - sin(gamma(i,:)) * cos(beta(i,:)));
+%     end
+% end
 
-n_dot_v = dot (n_inc, v_inc, 2);
-for i = 1:size(n_inc,1)
-if vecnorm(n_inc(i,:) - (dot(n_inc(i,:),z_local(i,:), 2) .* z_local(i,:)),2,2) == 0 || dot(nr0_inc(i,:),r_local(i,:),2) == 0
-    psi(i) = 0;
-else
-    psi(i) = acos((n_dot_v(i,:) - sin(gamma(i,:)) .* cos(beta(i,:))) ./ (cos(gamma(i,:)) .* sin(beta(i,:))));
-end
-end
+x1 = sin(gamma);
+x2 = cos(beta);
+x3 = cos(psi) .* cos(gamma) .* sin(beta) + sin(gamma) .* cos(beta);
 
-y1 = sin(gamma);
-y2 = cos(beta);
-y3 = cos(psi) .* cos(gamma) .* sin(beta) + sin(gamma) .* cos(beta);
-
-x1 = dot(-z_local, v_inc,2);
-x2 = dot(-z_local, n_inc,2);
-x3 = dot(n_inc, v_inc,2);
+y1 = dot(-z_local, v_inc,2);
+y2 = dot(-z_local, n_inc,2);
+y3 = dot(n_inc, v_inc,2);
 
 x1(abs(x1) < threshold) = 0;
 x2(abs(x2) < threshold) = 0;
@@ -230,11 +229,11 @@ for i = 1:size(n_inc,1)
     end
 end
 
-% for i = 1:size(n_inc,1)
-%     if dot(alpha_gen_t(i,:),-v_inc(i,:),2) < 0
-%     alpha_gen_t(i,:) = -(alpha_gen_t(i,:));
-%     end
-% end
+for i = 1:size(n_inc,1)
+    if dot(alpha_gen_t(i,:),-v_inc(i,:),2) < 0
+    alpha_gen_t(i,:) = -(alpha_gen_t(i,:));
+    end
+end
 
 % original
 % alpha_gen_n = dot(alpha_gen,n_inc,2) .* (-n_inc);
@@ -256,7 +255,12 @@ f = F ./ a_inc ./ 1000000; % N/mm²
 [forces] = sqrt(forces_x^2 + forces_y^2 + forces_z^2);
 
 %% 13. torque calculation
+if unit_test
+c_null = zeros(numel(d_inc), 1);
+else
 c_null = zeros(sum(include),1);
+end
+
 c_x = [c_null c_inc(:,2) c_inc(:,3)];
 c_y = [c_inc(:,1) c_null c_inc(:,3)];
 c_z = [c_inc(:,1) c_inc(:,2) c_null];
