@@ -4,28 +4,28 @@ clear all
 %% NOTES - TODO
 
 %% Define inputs - Agarwal verification studies
-folder = 'plateanchor';  % Cylinder, Simple, PlateAnchor or RobotTip
-object = 'plateanchormodel';  % Name of stl
+folder = 'cylinder';  % Cylinder, Simple, PlateAnchor or RobotTip
+object = 'cylinder';  % Name of stl
 triangle_size_calculation = 'veryrough';  % 'Fine', 'Normal', 'Rough', 'VeryRough'
 triangle_size_visualization = 'veryrough';  % 'Fine', 'Normal', 'Rough', 'VeryRough'
-movement = '';  % rotation or ''
+movement = 'rotation';  % rotation or ''
 linear_velocity = 0.1;  % linear velocity in m/s
-direction_angle_xz = 30*pi/180;  % angle between direction and x-z-axis
-direction_angle_y = 0*pi/180;  % angle between direction and y-axis
-angular_velocity = pi;  % angular velocity in rad/s
+direction_angle_xz = -90*pi/180;  % angle between direction and x-z-axis
+direction_angle_y = 90*pi/180;  % angle between direction and y-axis
+angular_velocity = [0 0 -1*pi];  % angular velocity in rad/s
 rho_c = 1310;  % bulk density of the sand in kg/m³   
-mu_int = 0.63;  % internal friction coefficient of the sand
-mu_surf = 0.99;  % intruder-surface interaction coefficient
+mu_int = 0.21;  % internal friction coefficient of the sand
+mu_surf = 0.4;  % intruder-surface interaction coefficient
 gravity = 9.81;  % gravity in m/s²
-depth = 0.085;  % in m
+depth = 0.125;  % in m
 
 direction_vector = [cos(direction_angle_xz) cos(direction_angle_y) sin(direction_angle_xz)];
 
 %% Plot options
 show_geometry = false;
 show_direction = false;
-show_f_quiver = true;
-show_alpha = false;
+show_f_quiver = false;
+show_alpha = true;
 
 show_f_scatter = false;
 show_f_scatterxyz = false;
@@ -70,19 +70,13 @@ depth_list = point_list(:,3)/1000; % mm to m
 %% 2. Calc velocity
 nElements = size(point_list, 1);
 
-vcor = linear_velocity .* direction_vector; 
+vcor = linear_velocity .* direction_vector .* 1000; 
 v_vec = ones(nElements,1) .* vcor ;
 
-
 if strcmp(movement, 'rotation')
-    % Direction Vector
-    r_list = sqrt(point_list(:,1) .^ 2 + point_list(:,2) .^ 2);
-    angle_list = atan2(point_list(:,2), point_list(:,1));
-    
-    vx = sin(angle_list) .* r_list .* angular_velocity + vcor(1);
-    vy = -cos(angle_list) .* r_list .* angular_velocity + vcor(2);
-    vz = zeros(nElements, 1) + vcor(3);
-    v_vec = [vx vy vz];
+    r_list = [point_list(:,1) point_list(:,2) point_list(:,3)+ones(nElements,1).*100];
+    v_sum = cross(ones(nElements,1) .*angular_velocity,r_list)+v_vec;
+    v_vec=v_sum;
 end
 
 v_norm_vec = v_vec ./ vecnorm(v_vec, 2, 2);
@@ -169,10 +163,26 @@ end
 end
 
 %% 6a. Determine x1, x2, x3
-x1 = sin(gamma);
-x2 = cos(beta);
-x3 = cos(psi) .* cos(gamma) .* sin(beta) + sin(gamma) .* cos(beta);
-% x3 = dot(n_inc, v_inc,2);
+beta = acos(dot(-z_local, n_inc,2));
+
+gamma = asin(dot(-z_local, v_inc,2));
+
+n_dot_v = dot (n_inc, v_inc, 2);
+for i = 1:size(n_inc,1)
+if vecnorm(n_inc(i,:) - (dot(n_inc(i,:),z_local(i,:), 2) .* z_local(i,:)),2,2) == 0 || dot(nr0_inc(i,:),r_local(i,:),2) == 0
+    psi(i) = 0;
+else
+    psi(i) = acos((n_dot_v(i,:) - sin(gamma(i,:)) .* cos(beta(i,:))) ./ (cos(gamma(i,:)) .* sin(beta(i,:))));
+end
+end
+
+y1 = sin(gamma);
+y2 = cos(beta);
+y3 = cos(psi) .* cos(gamma) .* sin(beta) + sin(gamma) .* cos(beta);
+
+x1 = dot(-z_local, v_inc,2);
+x2 = dot(-z_local, n_inc,2);
+x3 = dot(n_inc, v_inc,2);
 
 x1(abs(x1) < threshold) = 0;
 x2(abs(x2) < threshold) = 0;
@@ -226,8 +236,8 @@ end
 %     end
 % end
 
-% % original
-% alpha_gen_n = dot(alpha_gen,-n_inc,2) .* (-n_inc);
+% original
+% alpha_gen_n = dot(alpha_gen,n_inc,2) .* (-n_inc);
 % alpha_gen_t = (alpha_gen - alpha_gen_n);
  
 alpha = xi_n .* (alpha_gen_n + min(mu_surf .* vecnorm(alpha_gen_n,2,2) ./ vecnorm(alpha_gen_t,2,2),1) .* alpha_gen_t);

@@ -4,11 +4,11 @@ clear all
 %% NOTES - TODO
 
 %% Define inputs - Agarwal verification studies
-folder = 'cylinder';  % Cylinder, Simple, PlateAnchor or RobotTip
-object = 'cylinder';  % Name of stl
-triangle_size_calculation = 'normal';  % 'Fine', 'Normal', 'Rough', 'VeryRough'
+folder = 'plateanchor';  % Cylinder, Simple, PlateAnchor or RobotTip
+object = 'plough';  % Name of stl
+triangle_size_calculation = 'fine';  % 'Fine', 'Normal', 'Rough', 'VeryRough'
 triangle_size_visualization = 'rough';  % 'Fine', 'Normal', 'Rough', 'VeryRough'
-movement = 'vertical';  % vertical or horizontal
+movement = 'horizontal';  % vertical or horizontal
 linear_velocity = 0.1;  % linear velocity in m/s
 angular_velocity = pi;  % angular velocity in rad/s
 velocity_angle = -0*pi/180;  % Direction angle between x-axis and negative z-axis
@@ -16,12 +16,12 @@ rho_c = 1310;  % bulk density of the sand in kg/m³
 mu_int = 0.21;  % internal friction coefficient of the sand
 mu_surf = 0.4;  % intruder-surface interaction coefficient
 gravity = 9.81;  % gravity in m/s²
-depth = 0.125;  % in m
+depth = 0.025;  % in m
 
 %% Plot options
 show_geometry = false;
 show_direction = false;
-show_f_quiver = false;
+show_f_quiver = true;
 show_alpha = false;
 
 show_f_scatter = false;
