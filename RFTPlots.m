@@ -281,7 +281,7 @@ if show_linear_f
     % Plot linear graph forces - depth
     x_depth = [0.1 0.1 0.1];
     y_forces = [forces_x forces_y forces_z];
-    y_forces_agarwal = [0 0 59.35];  % pi --> 42.55 ; 0.5pi --> 53.80 ; 0.25pi --> 59.35
+    y_forces_agarwal = [0 0 42.55];  % pi --> 42.55 ; 0.5pi --> 53.80 ; 0.25pi --> 59.35
     figure;
     for i=1:3
         X = [0 x_depth(i)];
@@ -310,8 +310,8 @@ if show_linear_f
 
     % Plot linear graph torque - depth
     x_depth = [0.1 0.1 0.1];
-    y_torque = [torque_x torque_y -torque_z];
-    y_torque_agarwal = [0 0 0.375];  % pi --> 0.831 ; 0.5pi --> 0.644 ; 0.25pi --> 0.375
+    y_torque = [torque_x torque_y torque_z];
+    y_torque_agarwal = [0 0 0.831];  % pi --> 0.831 ; 0.5pi --> 0.644 ; 0.25pi --> 0.375
     figure;
     for i=1:3
         X = [0 x_depth(i)];

@@ -4,24 +4,24 @@ clear all
 %% NOTES - TODO
 
 %% Define inputs - Agarwal verification studies
-folder = 'plateanchor';  % Cylinder, Simple, PlateAnchor or RobotTip
-object = 'plateanchor';  % Name of stl
+folder = 'cylinder';  % Cylinder, Simple, PlateAnchor or RobotTip
+object = 'cylinder';  % Name of stl
 triangle_size_calculation = 'normal';  % 'Fine', 'Normal', 'Rough', 'VeryRough'
-triangle_size_visualization = 'veryrough';  % 'Fine', 'Normal', 'Rough', 'VeryRough'
-movement = 'horizontal';  % vertical or horizontal
-linear_velocity = 0.01;  % linear velocity in m/s
-angular_velocity = 1*pi;  % angular velocity in rad/s
-velocity_angle = -90*pi/180;  % Direction angle between x-axis and negative z-axis
-rho_c = 1673;  % bulk density of the sand in kg/m³   
-mu_int = 0.83;  % internal friction coefficient of the sand
-mu_surf = 0.99;  % intruder-surface interaction coefficient
+triangle_size_visualization = 'rough';  % 'Fine', 'Normal', 'Rough', 'VeryRough'
+movement = 'vertical';  % vertical or horizontal
+linear_velocity = 0.1;  % linear velocity in m/s
+angular_velocity = pi;  % angular velocity in rad/s
+velocity_angle = -0*pi/180;  % Direction angle between x-axis and negative z-axis
+rho_c = 1310;  % bulk density of the sand in kg/m³   
+mu_int = 0.21;  % internal friction coefficient of the sand
+mu_surf = 0.4;  % intruder-surface interaction coefficient
 gravity = 9.81;  % gravity in m/s²
-depth = 1.1 + 0.1;  % in m
+depth = 0.125;  % in m
 
 %% Plot options
 show_geometry = false;
 show_direction = false;
-show_f_quiver = true;
+show_f_quiver = false;
 show_alpha = false;
 
 show_f_scatter = false;
@@ -58,6 +58,7 @@ RFTPlots
 function [c_inc, v_norm_vec, F, f, forces_x, forces_y, forces_z, forces, T, torque_x, torque_y, torque_z, alpha_gen, alpha_gen_n, alpha_gen_t, alpha] = RFT3Dfunc(points, normals, area, movement, angular_velocity, linear_velocity, velocity_angle, rho_c, mu_int, mu_surf, gravity, unit_test)
 %% 1. Read Tip Data
 tic
+threshold = 1.0e-10;
 point_list = points;
 area_list = area/1000000; % mm² to m²
 normal_vectors = normals;
@@ -81,12 +82,15 @@ if strcmp(movement, 'vertical')
 
 elseif strcmp(movement, 'horizontal')
     % Direction Vector
-    vx = repmat(linear_velocity*1000*cos(velocity_angle),nElements,1);
-    vy = zeros(nElements, 1);
+    vx = zeros(nElements, 1);
+    vy = repmat(linear_velocity*1000*cos(velocity_angle),nElements,1);
     vz = repmat(-linear_velocity*1000*sin(velocity_angle),nElements,1);
     v_vec = [vx vy vz];
     v_norm_vec = v_vec ./ vecnorm(v_vec, 2, 2);
 end
+
+v_vec(abs(v_vec) < threshold) = 0;
+v_norm_vec(abs(v_norm_vec) < threshold) = 0;
 
 %% 3. Check conditions
 is_leading_edge = dot(normal_vectors, v_norm_vec, 2) >= 0;
@@ -95,12 +99,13 @@ include = is_leading_edge & is_intruding;
 
 n_inc = normal_vectors(include,:);
 v_inc = v_norm_vec(include,:);
+v_nn_inc = v_vec(include,:);
 a_inc = area_list(include,:);
 c_inc = point_list(include,:);
 d_inc = depth_list(include,:);
 
 if unit_test
-pointsTest = [1, 20];
+pointsTest = 67;
 n_inc = n_inc(pointsTest,:);
 v_inc = v_inc(pointsTest,:);
 a_inc = a_inc(pointsTest,:);
@@ -115,7 +120,17 @@ else
 z_local = repmat([0,0,1], sum(include), 1);
 end
 
-r_local = (v_inc - dot(v_inc, z_local, 3) .* z_local) ./ vecnorm(v_inc - dot(v_inc, z_local, 3) .* z_local, 2, 2);
+r_local = zeros(size(n_inc,1),3);
+for i = 1:size(n_inc,1)
+if (vecnorm(v_inc(i,:) - dot(v_inc(i,:), z_local(i,:), 3) .* z_local(i,:), 2, 2) == 0 && vecnorm(n_inc(i,:) - dot(n_inc(i,:), z_local(i,:), 3) .* z_local(i,:), 2, 2) == 0)
+r_local(i,:) = [1; 0; 0];
+elseif (vecnorm(v_nn_inc(i,:) - dot(v_nn_inc(i,:), z_local(i,:), 3) .* z_local(i,:), 2, 2) == 0 && vecnorm(n_inc(i,:) - dot(n_inc(i,:), z_local(i,:), 3) .* z_local(i,:), 2, 2) ~= 0)
+r_local(i,:) = (n_inc(i,:) - dot(n_inc(i,:), z_local(i,:), 3) .* z_local(i,:)) ./ vecnorm(n_inc(i,:) - dot(n_inc(i,:), z_local(i,:), 3) .* z_local(i,:), 2, 2);
+else
+r_local(i,:) = (v_nn_inc(i,:) - dot(v_nn_inc(i,:), z_local(i,:), 3) .* z_local(i,:)) ./ vecnorm(v_nn_inc(i,:) - dot(v_nn_inc(i,:), z_local(i,:), 3) .* z_local(i,:), 2, 2);
+end
+end
+
 theta_local = cross(z_local, r_local, 2);
 
 %% 5. Find RFT angles (beta, gamma, psi)
@@ -160,6 +175,10 @@ x1 = sin(gamma);
 x2 = cos(beta);
 x3 = cos(psi) .* cos(gamma) .* sin(beta) + sin(gamma) .* cos(beta);
 
+x1(abs(x1) < threshold) = 0;
+x2(abs(x2) < threshold) = 0;
+x3(abs(x3) < threshold) = 0;
+
 if unit_test
 unitx = ones(numel(d_inc), 1);
 else
@@ -193,12 +212,18 @@ xi_n = rho_c * gravity * (894*mu_int^3 - 386*mu_int^2 + 89*mu_int); % initially 
 alpha_gen_n = zeros(size(n_inc,1),3);
 alpha_gen_t = zeros(size(n_inc,1),3);
 for i = 1:size(n_inc,1)
-    if dot(alpha_gen(i,:),-n_inc(i,:),2)<0
+    if dot(alpha_gen(i,:),-n_inc(i,:),2) < 0
     alpha_gen_n(i,:) = -dot(alpha_gen(i,:),-n_inc(i,:),2) .* (-n_inc(i,:));
     alpha_gen_t(i,:) = (alpha_gen(i,:) + alpha_gen_n(i,:));
     else
     alpha_gen_n(i,:) = dot(alpha_gen(i,:),-n_inc(i,:),2) .* (-n_inc(i,:));
     alpha_gen_t(i,:) = (alpha_gen(i,:) - alpha_gen_n(i,:));
+    end
+end
+
+for i = 1:size(n_inc,1)
+    if dot(alpha_gen_t(i,:),-v_inc(i,:),2) < 0
+    alpha_gen_t(i,:) = -(alpha_gen_t(i,:));
     end
 end
 
@@ -214,7 +239,6 @@ alpha = xi_n .* (alpha_gen_n + min(mu_surf .* vecnorm(alpha_gen_n,2,2) ./ vecnor
 %% 11. multiplying up .* alpha * depth * area
 F = alpha .* abs(d_inc) .* a_inc; % N
 f = F ./ a_inc ./ 1000000; % N/mm²
-T = cross(F,c_inc,2) ./ 1000; % Nmm to Nm
 
 %% 12. sum all rows discrete intregral
 [forces_x] = sum(F(:,1),1);
@@ -222,9 +246,25 @@ T = cross(F,c_inc,2) ./ 1000; % Nmm to Nm
 [forces_z] = sum(F(:,3),1);
 [forces] = sqrt(forces_x^2 + forces_y^2 + forces_z^2);
 
-[torque_x] = sum(T(:,1),1);
-[torque_y] = sum(T(:,2),1);
-[torque_z] = sum(T(:,3),1);
+%% 13. torque calculation
+c_null = zeros(sum(include),1);
+c_x = [c_null c_inc(:,2) c_inc(:,3)];
+c_y = [c_inc(:,1) c_null c_inc(:,3)];
+c_z = [c_inc(:,1) c_inc(:,2) c_null];
+
+F_x = [c_null F(:,2) F(:,3)];
+F_y = [F(:,1) c_null F(:,3)];
+F_z = [F(:,1) F(:,2) c_null];
+
+T_x = cross(c_x,F_x) ./ 1000;
+T_y = cross(c_y,F_y) ./ 1000;
+T_z = cross(c_z,F_z) ./ 1000;
+
+T = [T_x(:,1) T_y(:,2) T_z(:,3)];
+
+[torque_x] = sum(T_x(:,1), 1);
+[torque_y] = sum(T_y(:,2), 1);
+[torque_z] = sum(T_z(:,3), 1);
 toc
 end
 
