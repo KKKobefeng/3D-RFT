@@ -6,7 +6,7 @@ clear all
 %% Define inputs - Agarwal verification studies
 folder = 'cylinder';  % Cylinder, Simple, PlateAnchor or RobotTip
 object = 'cylinder';  % Name of stl
-triangle_size_calculation = 'normal';  % 'Fine', 'Normal', 'Rough', 'VeryRough'
+triangle_size_calculation = 'rough';  % 'Fine', 'Normal', 'Rough', 'VeryRough'
 triangle_size_visualization = 'veryrough';  % 'Fine', 'Normal', 'Rough', 'VeryRough'
 rotation = true;  % true or false
 linear_velocity = 0.1;  % linear velocity in m/s
