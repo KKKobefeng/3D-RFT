@@ -2,7 +2,6 @@
 if show_geometry
     figure
     hold on
-    title ('Tip mesh visualization');
     colormap winter;
     view([45 25])
     trisurf(TRG);
@@ -14,14 +13,13 @@ if show_geometry
     axis on;
     if saveFigures
     set(gcf,'PaperPositionMode','auto')
-    print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/visual_mesh_', object, '.pdf'));
+    print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/visual_mesh_', object, triangle_size_calculation, '.pdf'));
     end
     hold off;
 
     % Create a quiver plot with the normals as the arrow directions
     figure
     quiver3(points(:,1), points(:,2), points(:,3), normals(:,1), normals(:,2), normals(:,3), 1.25);
-    title ('Normals of subsurfaces');
     colormap summer;
     view([45 25])
     daspect([1 1 1]);
@@ -32,13 +30,12 @@ if show_geometry
     axis on
     if saveFigures
     set(gcf,'PaperPositionMode','auto')
-    print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/visual_normals_', object, '.pdf'));
+    print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/visual_normals_', object, triangle_size_calculation, '.pdf'));
     end
     hold off;
 
     % Show the points in the mesh
     figure
-    title ('Center points of subsurfaces');
     view([45 25])
     daspect([1 1 1]);
     xlabel('x');
@@ -51,7 +48,7 @@ if show_geometry
     scatter3(points(:,1), points(:,2), points(:,3), 5, 'filled');
     if saveFigures
     set(gcf,'PaperPositionMode','auto')
-    print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/visual_points_', object, '.pdf'));
+    print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/visual_points_', object, triangle_size_calculation, '.pdf'));
     end
     hold off;
 end
@@ -71,7 +68,7 @@ if show_direction
     axis on;
     if saveFigures
     set(gcf,'PaperPositionMode','auto')
-    print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/visual_direction_vectors_', object, '.pdf'));
+    print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/visual_direction_vectors_', object, triangle_size_calculation, '.pdf'));
     end
     hold off;
 end
@@ -90,12 +87,12 @@ if show_f_quiver
     hold on;
     trimesh(TRGVisual, 'LineWidth', 0.1, 'EdgeColor', '#888888', 'FaceAlpha', 0);
     %trisurf(TRG)
-    q = quiver3(c_inc(:,1), c_inc(:,2), c_inc(:,3), F(:,1), F(:,2), F(:,3),2, 'LineWidth', 1, 'MaxHeadSize', 5);
+    q = quiver3(c_inc(:,1), c_inc(:,2), c_inc(:,3), -F(:,1), -F(:,2), -F(:,3),2, 'LineWidth', 1, 'MaxHeadSize', 0);
     currentColormap = jet;
     SetQuiverColor(q,currentColormap);
     if saveFigures
     set(gcf,'PaperPositionMode','auto')
-    print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/forces_quiver_', object, '.pdf'));
+    print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/forces_quiver_', object, triangle_size_calculation, '.pdf'));
     end
     hold off;
 end
@@ -120,95 +117,164 @@ if show_f_scatter
     colorbar;
     if saveFigures
     set(gcf,'PaperPositionMode','auto')
-    print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/forces_scatter_', object, '.pdf'));
+    print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/forces_scatter_', object, triangle_size_calculation, '.pdf'));
     end
     hold off;
 end
 
+
+%     % Plot forces on each point of the mesh (scatter x)
+%     figure;
+%     %title ('f_X [N/m^2]');
+%     view([45 25])
+%     %view([-45 -10])  % bunny drill
+%     daspect([1 1 1]);
+%     xlabel('x');
+%     ylabel('y');
+%     zlabel('z');
+%     zlim([-inf inf]);
+%     grid off;
+%     hold on;
+%     trimesh(TRGVisual, 'LineWidth', 0.1, 'EdgeColor', '#888888', 'FaceAlpha', 0);
+%     %trisurf(TRG)
+%     scatter3(c_inc(:,1), c_inc(:,2), c_inc(:,3), 'filled', 'MarkerEdgeColor', 'none', 'CData', f(:,1), 'SizeData', 500*max(max(abs(f)))/max(abs(f(:,2)))*abs(f(:,1))); % -f just because of inverted colorbar
+%     colormap(jet);
+%     %colormap(brewermap([],"-RdYlBu"));
+%     clim([-max(max(abs(f))) max(max(abs(f)))]);
+%     c = colorbar;
+%     c.Ticks = [-max(max(abs(f))) 0 max(max(abs(f)))];
+%     c.Label.String = '\bf{f_X [N/m²]}';
+%     c.Location = 'northoutside';
+%     if saveFigures
+%     set(gcf,'PaperPositionMode','auto')
+%     print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/forces_scatter_x_', object, triangle_size_calculation, '.pdf'));
+%     end
+%     hold off;
+% 
+%     % Plot forces on each point of the mesh (scatter y)
+%     figure;
+%     %title ('f_Y [N/m^2]');
+%     view([45 25])
+%     %view([-45 -10])  % bunny drill
+%     daspect([1 1 1]);
+%     xlabel('x');
+%     ylabel('y');
+%     zlabel('z');
+%     zlim([-inf inf]);
+%     grid off;
+%     hold on;
+%     trimesh(TRGVisual, 'LineWidth', 0.1, 'EdgeColor', '#888888', 'FaceAlpha', 0);
+%     %trisurf(TRG)
+%     scatter3(c_inc(:,1), c_inc(:,2), c_inc(:,3), 'filled', 'MarkerEdgeColor', 'none', 'CData', f(:,2), 'SizeData', 500*max(max(abs(f)))/max(abs(f(:,2)))*abs(f(:,2)));
+%     colormap(jet);
+%     %colormap(brewermap([],"-RdYlBu"));
+%     clim([-max(max(abs(f))) max(max(abs(f)))]);
+%     c = colorbar;
+%     c.Ticks = [-max(max(abs(f))) 0 max(max(abs(f)))];
+%     c.Label.String = '\bf{f_Y [N/m²]}';
+%     c.Location = 'northoutside';
+%     if saveFigures
+%     set(gcf,'PaperPositionMode','auto')
+%     print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/forces_scatter_y_', object, triangle_size_calculation, '.pdf'));
+%     end
+%     hold off;
+% 
+%     % Plot forces on each point of the mesh (scatter z)
+%     figure;
+%     %title ('f_Z [N/m^2]');
+%     view([45 25])
+%     %view([-45 -10])  % bunny drill
+%     daspect([1 1 1]);
+%     xlabel('x');
+%     ylabel('y');
+%     zlabel('z');
+%     zlim([-inf inf]);
+%     grid off;
+%     hold on;
+%     trimesh(TRGVisual, 'LineWidth', 0.1, 'EdgeColor', '#999999', 'FaceAlpha', 0);
+%     %trisurf(TRG)
+%     scatter3(c_inc(:,1), c_inc(:,2), c_inc(:,3), 'filled', 'MarkerEdgeColor', 'none', 'CData', f(:,3), 'SizeData', 500*max(max(abs(f)))/max(abs(f(:,2)))*abs(f(:,3)));
+%     colormap(jet);
+%     %colormap(brewermap([],"YlOrRd"));
+%     clim([-max(max(abs(f))) max(max(abs(f)))]);
+%     c = colorbar;
+%     c.Ticks = [-max(max(abs(f))) 0 max(max(abs(f)))];
+%     c.Label.String = '\bf{f_Z [N/m²]}';
+%     c.Location = 'northoutside';
+%     if saveFigures
+%     set(gcf,'PaperPositionMode','auto')
+%     print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/forces_scatter_z_', object, triangle_size_calculation, '.pdf'));
+%     end
+%     hold off;
+
+
 if show_f_scatterxyz
-    % Plot forces on each point of the mesh (scatter x)
-    figure;
-    %title ('f_X [N/m^2]');
-    view([45 25])
-    %view([-45 -10])  % bunny drill
+    % Multiplot
+    % Define figure size and aspect ratio
+    aspect_ratio = [1, 1, 1]; % aspect ratio for each subplot
+    % Create figure
+    figure('Units', 'pixels', 'Position', [0, 0, fig_width, fig_height]);
+    % Define common plot settings
+    view_angle = [45, 25];
     daspect([1 1 1]);
-    xlabel('x');
-    ylabel('y');
-    zlabel('z');
     zlim([-inf inf]);
     grid off;
+    % Plot forces on each point of the mesh (scatter x)
+    subplot(1, 3, 1);
     hold on;
+    xlabel('x [mm]');
+    ylabel('y [mm]');
+    zlabel('z [mm]');
+    title('\bf{f_X [N/m²]}');
     trimesh(TRGVisual, 'LineWidth', 0.1, 'EdgeColor', '#888888', 'FaceAlpha', 0);
-    %trisurf(TRG)
     scatter3(c_inc(:,1), c_inc(:,2), c_inc(:,3), 'filled', 'MarkerEdgeColor', 'none', 'CData', f(:,1), 'SizeData', 500*max(max(abs(f)))/max(abs(f(:,2)))*abs(f(:,1))); % -f just because of inverted colorbar
     colormap(jet);
-    %colormap(brewermap([],"-RdYlBu"));
     clim([-max(max(abs(f))) max(max(abs(f)))]);
     c = colorbar;
     c.Ticks = [-max(max(abs(f))) 0 max(max(abs(f)))];
-    c.Label.String = '\bf{f_X [N/m²]}';
-    c.Location = 'northoutside';
-    if saveFigures
-    set(gcf,'PaperPositionMode','auto')
-    print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/forces_scatter_x_', object, '.pdf'));
-    end
+    c.Location = 'south';
+    view(view_angle);
+    set(gca, 'DataAspectRatio', aspect_ratio);
     hold off;
-
     % Plot forces on each point of the mesh (scatter y)
-    figure;
-    %title ('f_Y [N/m^2]');
-    view([45 25])
-    %view([-45 -10])  % bunny drill
-    daspect([1 1 1]);
-    xlabel('x');
-    ylabel('y');
-    zlabel('z');
-    zlim([-inf inf]);
-    grid off;
+    subplot(1, 3, 2);
     hold on;
+    xlabel('x [mm]');
+    ylabel('y [mm]');
+    zlabel('z [mm]');
+    title('\bf{f_Y [N/m²]}');
     trimesh(TRGVisual, 'LineWidth', 0.1, 'EdgeColor', '#888888', 'FaceAlpha', 0);
-    %trisurf(TRG)
     scatter3(c_inc(:,1), c_inc(:,2), c_inc(:,3), 'filled', 'MarkerEdgeColor', 'none', 'CData', f(:,2), 'SizeData', 500*max(max(abs(f)))/max(abs(f(:,2)))*abs(f(:,2)));
     colormap(jet);
-    %colormap(brewermap([],"-RdYlBu"));
     clim([-max(max(abs(f))) max(max(abs(f)))]);
     c = colorbar;
     c.Ticks = [-max(max(abs(f))) 0 max(max(abs(f)))];
-    c.Label.String = '\bf{f_Y [N/m²]}';
-    c.Location = 'northoutside';
-    if saveFigures
-    set(gcf,'PaperPositionMode','auto')
-    print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/forces_scatter_y_', object, '.pdf'));
-    end
+    c.Location = 'south';
+    view(view_angle);
+    set(gca, 'DataAspectRatio', aspect_ratio);
     hold off;
-
     % Plot forces on each point of the mesh (scatter z)
-    figure;
-    %title ('f_Z [N/m^2]');
-    view([45 25])
-    %view([-45 -10])  % bunny drill
-    daspect([1 1 1]);
-    xlabel('x');
-    ylabel('y');
-    zlabel('z');
-    zlim([-inf inf]);
-    grid off;
+    subplot(1, 3, 3);
     hold on;
+    xlabel('x [mm]');
+    ylabel('y [mm]');
+    zlabel('z [mm]');
+    title('\bf{f_Z [N/m²]}');
     trimesh(TRGVisual, 'LineWidth', 0.1, 'EdgeColor', '#999999', 'FaceAlpha', 0);
-    %trisurf(TRG)
     scatter3(c_inc(:,1), c_inc(:,2), c_inc(:,3), 'filled', 'MarkerEdgeColor', 'none', 'CData', f(:,3), 'SizeData', 500*max(max(abs(f)))/max(abs(f(:,2)))*abs(f(:,3)));
     colormap(jet);
-    %colormap(brewermap([],"YlOrRd"));
     clim([-max(max(abs(f))) max(max(abs(f)))]);
     c = colorbar;
     c.Ticks = [-max(max(abs(f))) 0 max(max(abs(f)))];
-    c.Label.String = '\bf{f_Z [N/m²]}';
-    c.Location = 'northoutside';
+    c.Location = 'south';
+    view(view_angle);
+    set(gca, 'DataAspectRatio', aspect_ratio);
+    hold off;
+    % Save figure
     if saveFigures
     set(gcf,'PaperPositionMode','auto')
-    print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/forces_scatter_z_', object, '.pdf'));
+    print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/forces_scatter_xyz_', object, triangle_size_calculation, '.pdf'));
     end
-    hold off;
 end
 
 if show_alpha
@@ -229,7 +295,7 @@ if show_alpha
     SetQuiverColor(q,currentColormap);
     if saveFigures
     set(gcf,'PaperPositionMode','auto')
-    print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/alpha_gen_quiver_', object, '.pdf'));
+    print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/alpha_gen_quiver_', object, triangle_size_calculation, '.pdf'));
     end
     hold off;
 
@@ -250,7 +316,7 @@ if show_alpha
     SetQuiverColor(q,currentColormap);
     if saveFigures
     set(gcf,'PaperPositionMode','auto')
-    print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/alpha_gen_n_quiver_', object, '.pdf'));
+    print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/alpha_gen_n_quiver_', object, triangle_size_calculation, '.pdf'));
     end
     hold off;
 
@@ -271,7 +337,7 @@ if show_alpha
     SetQuiverColor(q,currentColormap);
     if saveFigures
     set(gcf,'PaperPositionMode','auto')
-    print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/alpha_gen_t_quiver_', object, '.pdf'));
+    print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/alpha_gen_t_quiver_', object, triangle_size_calculation, '.pdf'));
     end
     hold off;
 
@@ -286,21 +352,21 @@ if show_linear_f
     for i=1:3
         X = [0 x_depth(i)];
         Y = [0 y_forces_agarwal(i)];
-        plot(X, Y, 'LineWidth', 1.25, 'Color', [0, 0.4470, 0.7410], 'LineStyle', '--') % plot agarwal lines
+        plot(X, Y, 'LineWidth', 1, 'Color', 'k', 'LineStyle', '--') % plot agarwal lines
         hold on
     end
     for i=1:3
         X = [0 x_depth(i)];
         Y = [0 y_forces(i)];
-        plot(X, Y, 'LineWidth', 1.5, 'Color', [0.8500, 0.3250, 0.0980], 'LineStyle', ':')  % plot lines
+        plot(X, Y, 'LineWidth', 1, 'Color', 'k', 'LineStyle', '-')  % plot lines
         hold on
     end
     xlabel('Depth [m]');
     ylabel('Forces [N]');
     grid on;
     xlim([0 0.1]);
-    ylim([-10 100]);
-    legend('Agarwal', '', '', 'Hannes', 'Location', 'northwest')
+    ylim([-10 75]);
+    legend('Reference study', '', '', 'Implementation', 'Location', 'northwest')
     if saveFigures
     set(gcf,'PaperPositionMode','auto')
     print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/forces_depth_', object, '.pdf'));
@@ -316,13 +382,13 @@ if show_linear_f
     for i=1:3
         X = [0 x_depth(i)];
         Y = [0 y_torque_agarwal(i)];
-        plot(X, Y, 'LineWidth', 1.25, 'Color', [0, 0.4470, 0.7410], 'LineStyle', '--') % plot agarwal lines
+        plot(X, Y, 'LineWidth', 1, 'Color', 'k', 'LineStyle', '--') % plot agarwal lines
         hold on
     end
     for i=1:3
         X = [0 x_depth(i)];
         Y = [0 y_torque(i)];
-        plot(X, Y, 'LineWidth', 1.5, 'Color', [0.8500, 0.3250, 0.0980], 'LineStyle', ':')  % plot lines
+        plot(X, Y, 'LineWidth', 1, 'Color', 'k', 'LineStyle', '-')  % plot lines
         hold on
     end
     xlabel('Depth [m]');
@@ -330,7 +396,7 @@ if show_linear_f
     xlim([0 0.1]);
     ylim([-0.1 1.6]);
     grid on;
-    legend('Agarwal', '', '', 'Hannes', 'Location', 'northwest')
+    legend('Reference study', '', '', 'Implementation', 'Location', 'northwest')
     if saveFigures
     set(gcf,'PaperPositionMode','auto')
     print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/torque_depth_', object, '.pdf'));

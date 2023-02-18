@@ -4,20 +4,20 @@ clear all
 %% NOTES - TODO
 
 %% Define inputs - Agarwal verification studies
-folder = 'simple';  % Cylinder, Simple, PlateAnchor or RobotTip
+folder = 'cylinder';  % Cylinder, Simple, PlateAnchor or RobotTip
 object = 'cylinder';  % Name of stl
 triangle_size_calculation = 'normal';  % 'Fine', 'Normal', 'Rough', 'VeryRough'
 triangle_size_visualization = 'veryrough';  % 'Fine', 'Normal', 'Rough', 'VeryRough'
-rotation = false;  % true or false
+rotation = true;  % true or false
 linear_velocity = 0.1;  % linear velocity in m/s
 direction_angle_xz = -90 * pi / 180;  % angle between direction and x-z-axis
 direction_angle_y = 90 * pi / 180;  % angle between direction and y-axis
 angular_velocity = [0, 0, -1 * pi];  % angular velocity in rad/s
-rho_c = 1500;  % bulk density of the sand in kg/m³   
-mu_int = 0.36;  % internal friction coefficient of the sand
-mu_surf = 6;  % intruder-surface interaction coefficient
+rho_c = 1310;  % bulk density of the sand in kg/m³   
+mu_int = 0.21;  % internal friction coefficient of the sand
+mu_surf = 0.4;  % intruder-surface interaction coefficient
 gravity = 9.81;  % gravity in m/s²
-depth = 0.001;  % in m
+depth = 0.125;  % in m
 
 direction_vector = [cos(direction_angle_xz) cos(direction_angle_y) sin(direction_angle_xz)];
 
