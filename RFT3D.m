@@ -11,22 +11,22 @@ rotation = true;  % true or false
 linear_velocity = 0.01;  % linear velocity in m/s
 direction_angle_xz = -90 * pi / 180;  % angle between direction and x-z-axis
 direction_angle_y = 90 * pi / 180;  % angle between direction and y-axis
-angular_velocity = [0, 0, -2*pi];  % angular velocity in rad/s
+angular_velocity = [0, 0, -pi];  % angular velocity in rad/s
 rho_c = 1630;  % bulk density of the sand in kg/m³   
 mu_int = 1.07;  % internal friction coefficient of the sand
 mu_surf = 0.4;  % intruder-surface interaction coefficient
 gravity = 9.81;  % gravity in m/s²
-depth = 0.15;  % in m
+depth = 0.10;  % in m
 
 direction_vector = [round(cos(direction_angle_xz), 15) round(cos(direction_angle_y), 15) round(sin(direction_angle_xz), 15)];
 
 %% Plot options
 show_geometry = false;
 show_direction = false;
-show_f_quiver = true;
+show_f_quiver = false;
 show_alpha = false;
 
-show_f_scatter = false;
+show_f_scatter = true;
 show_f_scatterxyz = false;
 
 show_linear_f = false;
