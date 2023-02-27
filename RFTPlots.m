@@ -86,7 +86,7 @@ if show_f_quiver
     zlabel('Z  [mm]');
     zlim([-inf inf]);
     hold on;
-    trimesh(TRGVisual, 'LineWidth', 0.1, 'EdgeColor', '#888888', 'FaceAlpha', 0);
+    trimesh(TRG_visual, 'LineWidth', 0.1, 'EdgeColor', '#888888', 'FaceAlpha', 0);
     %trisurf(TRG)
     q = quiver3(c_inc(:,1), c_inc(:,2), c_inc(:,3), -F(:,1), -F(:,2), -F(:,3),2, 'LineWidth', 1, 'MaxHeadSize', 0);
     currentColormap = jet;
@@ -109,9 +109,9 @@ if show_f_scatter
     zlabel('Z  [mm]');
     zlim([-inf inf]);
     hold on;
-    trimesh(TRGVisual, 'LineWidth', 0.1, 'EdgeColor', '#888888', 'FaceAlpha', 0);
+    trimesh(TRG_visual, 'LineWidth', 0.1, 'EdgeColor', '#888888', 'FaceAlpha', 0);
     %trisurf(TRG)
-    scatter3(c_inc(:,1), c_inc(:,2), c_inc(:,3), 'filled', 'MarkerEdgeColor', 'none', 'CData', vecnorm(f, 2, 2), 'SizeData', 500*abs(vecnorm(f, 2, 2)));
+    scatter3(c_inc(:,1), c_inc(:,2), c_inc(:,3), 'filled', 'MarkerEdgeColor', 'none', 'CData', vecnorm(f, 2, 2), 'SizeData', 250*abs(vecnorm(f, 2, 2)));
     colormap(jet);
     clim([min(vecnorm(f, 2, 2)) max(vecnorm(f, 2, 2))]);
     set(findall(gcf,'-property','FontSize'),'FontSize',14);
@@ -135,7 +135,7 @@ end
 %     zlim([-inf inf]);
 %     grid off;
 %     hold on;
-%     trimesh(TRGVisual, 'LineWidth', 0.1, 'EdgeColor', '#888888', 'FaceAlpha', 0);
+%     trimesh(TRG_visual, 'LineWidth', 0.1, 'EdgeColor', '#888888', 'FaceAlpha', 0);
 %     %trisurf(TRG)
 %     scatter3(c_inc(:,1), c_inc(:,2), c_inc(:,3), 'filled', 'MarkerEdgeColor', 'none', 'CData', f(:,1), 'SizeData', 500*max(max(abs(f)))/max(abs(f(:,2)))*abs(f(:,1))); % -f just because of inverted colorbar
 %     colormap(jet);
@@ -163,7 +163,7 @@ end
 %     zlim([-inf inf]);
 %     grid off;
 %     hold on;
-%     trimesh(TRGVisual, 'LineWidth', 0.1, 'EdgeColor', '#888888', 'FaceAlpha', 0);
+%     trimesh(TRG_visual, 'LineWidth', 0.1, 'EdgeColor', '#888888', 'FaceAlpha', 0);
 %     %trisurf(TRG)
 %     scatter3(c_inc(:,1), c_inc(:,2), c_inc(:,3), 'filled', 'MarkerEdgeColor', 'none', 'CData', f(:,2), 'SizeData', 500*max(max(abs(f)))/max(abs(f(:,2)))*abs(f(:,2)));
 %     colormap(jet);
@@ -191,7 +191,7 @@ end
 %     zlim([-inf inf]);
 %     grid off;
 %     hold on;
-%     trimesh(TRGVisual, 'LineWidth', 0.1, 'EdgeColor', '#999999', 'FaceAlpha', 0);
+%     trimesh(TRG_visual, 'LineWidth', 0.1, 'EdgeColor', '#999999', 'FaceAlpha', 0);
 %     %trisurf(TRG)
 %     scatter3(c_inc(:,1), c_inc(:,2), c_inc(:,3), 'filled', 'MarkerEdgeColor', 'none', 'CData', f(:,3), 'SizeData', 500*max(max(abs(f)))/max(abs(f(:,2)))*abs(f(:,3)));
 %     colormap(jet);
@@ -228,7 +228,7 @@ if show_f_scatterxyz
     xlabel('X  [mm]');
     ylabel('Y  [mm]');
     zlabel('Z  [mm]');
-    trimesh(TRGVisual, 'LineWidth', 0.1, 'EdgeColor', '#888888', 'FaceAlpha', 0);
+    trimesh(TRG_visual, 'LineWidth', 0.1, 'EdgeColor', '#888888', 'FaceAlpha', 0);
     scatter3(c_inc(:,1), c_inc(:,2), c_inc(:,3), 'filled', 'MarkerEdgeColor', 'none', 'CData', f(:,1), 'SizeData', 250*max(max(abs(f)))/max(abs(f(:,2)))*abs(f(:,1))); % -f just because of inverted colorbar
     colormap(jet);
     clim([-max(max(abs(f))) max(max(abs(f)))]);
@@ -245,7 +245,7 @@ if show_f_scatterxyz
     xlabel('X  [mm]');
     ylabel('Y  [mm]');
     zlabel('Z  [mm]');
-    trimesh(TRGVisual, 'LineWidth', 0.1, 'EdgeColor', '#888888', 'FaceAlpha', 0);
+    trimesh(TRG_visual, 'LineWidth', 0.1, 'EdgeColor', '#888888', 'FaceAlpha', 0);
     scatter3(c_inc(:,1), c_inc(:,2), c_inc(:,3), 'filled', 'MarkerEdgeColor', 'none', 'CData', f(:,2), 'SizeData', 250*max(max(abs(f)))/max(abs(f(:,2)))*abs(f(:,2)));
     colormap(jet);
     clim([-max(max(abs(f))) max(max(abs(f)))]);
@@ -262,7 +262,7 @@ if show_f_scatterxyz
     xlabel('X  [mm]');
     ylabel('Y  [mm]');
     zlabel('Z  [mm]');
-    trimesh(TRGVisual, 'LineWidth', 0.1, 'EdgeColor', '#999999', 'FaceAlpha', 0);
+    trimesh(TRG_visual, 'LineWidth', 0.1, 'EdgeColor', '#999999', 'FaceAlpha', 0);
     scatter3(c_inc(:,1), c_inc(:,2), c_inc(:,3), 'filled', 'MarkerEdgeColor', 'none', 'CData', f(:,3), 'SizeData', 250*max(max(abs(f)))/max(abs(f(:,2)))*abs(f(:,3)));
     colormap(jet);
     clim([-max(max(abs(f))) max(max(abs(f)))]);
@@ -292,7 +292,7 @@ if show_alpha
     zlim([-inf inf]);
     grid on;
     hold on;
-    trimesh(TRGVisual, 'LineWidth', 0.1, 'EdgeColor', '#888888', 'FaceAlpha', 0);
+    trimesh(TRG_visual, 'LineWidth', 0.1, 'EdgeColor', '#888888', 'FaceAlpha', 0);
     %trisurf(TRG)
     q = quiver3(c_inc(:,1), c_inc(:,2), c_inc(:,3), alpha_gen(:,1), alpha_gen(:,2), alpha_gen(:,3),2, 'LineWidth', 2, 'ShowArrowHead','on', 'MaxHeadSize', 5);
     currentColormap = jet;
@@ -313,7 +313,7 @@ if show_alpha
     zlim([-inf inf]);
     grid on;
     hold on;
-    trimesh(TRGVisual, 'LineWidth', 0.1, 'EdgeColor', '#888888', 'FaceAlpha', 0);
+    trimesh(TRG_visual, 'LineWidth', 0.1, 'EdgeColor', '#888888', 'FaceAlpha', 0);
     %trisurf(TRG)
     q = quiver3(c_inc(:,1), c_inc(:,2), c_inc(:,3), alpha_gen_n(:,1), alpha_gen_n(:,2), alpha_gen_n(:,3),2, 'LineWidth', 2, 'ShowArrowHead','on', 'MaxHeadSize', 5);
     currentColormap = jet;
@@ -334,7 +334,7 @@ if show_alpha
     zlim([-inf inf]);
     grid on;
     hold on;
-    trimesh(TRGVisual, 'LineWidth', 0.1, 'EdgeColor', '#888888', 'FaceAlpha', 0);
+    trimesh(TRG_visual, 'LineWidth', 0.1, 'EdgeColor', '#888888', 'FaceAlpha', 0);
     %trisurf(TRG)
     q = quiver3(c_inc(:,1), c_inc(:,2), c_inc(:,3), alpha_gen_t(:,1), alpha_gen_t(:,2), alpha_gen_t(:,3),2, 'LineWidth', 2, 'ShowArrowHead','on', 'MaxHeadSize', 5);
     currentColormap = jet;
