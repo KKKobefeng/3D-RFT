@@ -1,25 +1,24 @@
-close all
 clear all
 
 %% NOTES - TODO
 
 %% Define inputs - Agarwal verification studies
-folder = 'cylinder';  % Cylinder, Simple, PlateAnchor or RobotTip
-object = 'cylinder';  % Name of stl
-triangle_size_calculation = 'rough';  % 'Fine', 'Normal', 'Rough', 'VeryRough'
-triangle_size_visualization = 'veryrough';  % 'Fine', 'Normal', 'Rough', 'VeryRough'
+folder = 'RobotTip';  % Cylinder, Simple, PlateAnchor or RobotTip
+object = 'TipNr1';  % Name of stl
+triangle_size_calculation = 'VeryRough';  % 'Fine', 'Normal', 'Rough', 'VeryRough'
+triangle_size_visualization = 'VeryRough';  % 'Fine', 'Normal', 'Rough', 'VeryRough'
 rotation = true;  % true or false
-linear_velocity = 0.1;  % linear velocity in m/s
+linear_velocity = 0.01;  % linear velocity in m/s
 direction_angle_xz = -90 * pi / 180;  % angle between direction and x-z-axis
 direction_angle_y = 90 * pi / 180;  % angle between direction and y-axis
-angular_velocity = [0, 0, -1 * pi];  % angular velocity in rad/s
-rho_c = 1310;  % bulk density of the sand in kg/m³   
-mu_int = 0.21;  % internal friction coefficient of the sand
+angular_velocity = [0, 0, -2*pi];  % angular velocity in rad/s
+rho_c = 1500;  % bulk density of the sand in kg/m³   
+mu_int = 0.4;  % internal friction coefficient of the sand
 mu_surf = 0.4;  % intruder-surface interaction coefficient
 gravity = 9.81;  % gravity in m/s²
-depth = 0.125;  % in m
+depth = 0.15;  % in m
 
-direction_vector = [cos(direction_angle_xz) cos(direction_angle_y) sin(direction_angle_xz)];
+direction_vector = [round(cos(direction_angle_xz), 15) round(cos(direction_angle_y), 15) round(sin(direction_angle_xz), 15)];
 
 %% Plot options
 show_geometry = false;
@@ -27,7 +26,7 @@ show_direction = false;
 show_f_quiver = false;
 show_alpha = false;
 
-show_f_scatter = false;
+show_f_scatter = true;
 show_f_scatterxyz = false;
 
 show_linear_f = false;
@@ -40,8 +39,8 @@ unit_test = false;
 TRG = stlread(strcat('./', folder, '/Models/', object, triangle_size_calculation, '.stl'));  % Mesh size for calculation
 TRGVisual = stlread(strcat('./', folder, '/Models/', object, triangle_size_visualization, '.stl'));  % Mesh size for force plots
 
-TRG = rotateTriangulationX(TRG, 0);  % Rotate TRG object
-TRGVisual = rotateTriangulationX(TRGVisual, 0);
+TRG = rotateTriangulationX(TRG, -90);  % Rotate TRG object
+TRGVisual = rotateTriangulationX(TRGVisual, -90);
 
 TRG = moveTriangulationZ(TRG, depth);  % Align bottom of object with depth input
 TRGVisual = moveTriangulationZ(TRGVisual, depth);
@@ -74,9 +73,9 @@ vcor = linear_velocity .* direction_vector .* 1000;
 v_vec = ones(nElements,1) .* vcor ;
 
 if rotation
-    r_list = [point_list(:,1) point_list(:,2) point_list(:,3)+ones(nElements,1).*100];
-    v_sum = cross(ones(nElements,1) .*angular_velocity,r_list)+v_vec;
-    v_vec=v_sum;
+    r_list = [point_list(:,1) point_list(:,2) point_list(:,3) + ones(nElements,1) .* 100];
+    v_sum = cross(ones(nElements,1) .* angular_velocity, r_list) + v_vec;
+    v_vec= round(v_sum, 15);
 end
 
 v_norm_vec = v_vec ./ vecnorm(v_vec, 2, 2);
@@ -130,13 +129,13 @@ theta_local = cross(z_local, r_local, 2);
 beta = zeros(size(n_inc,1),1);
 for i = 1:size(n_inc,1)
 if (dot(n_inc(i,:),r_local(i,:), 2) >= 0) && (dot(n_inc(i,:),z_local(i,:), 2) >= 0)
-    beta(i) = - acos(dot(n_inc(i,:),z_local(i,:), 2));
+    beta(i) = - round(acos(dot(n_inc(i,:),z_local(i,:), 2)), 15);
 elseif  (dot(n_inc(i,:),r_local(i,:), 2) >= 0) && (dot(n_inc(i,:),z_local(i,:), 2) < 0)
-    beta(i) = +pi - acos(dot(n_inc(i,:),z_local(i,:), 2));
+    beta(i) = +pi - round(acos(dot(n_inc(i,:),z_local(i,:), 2)), 15);
 elseif  (dot(n_inc(i,:),r_local(i,:), 2) < 0) && (dot(n_inc(i,:),z_local(i,:), 2) >= 0)
-    beta(i) =     + acos(dot(n_inc(i,:),z_local(i,:), 2));
+    beta(i) =     + round(acos(dot(n_inc(i,:),z_local(i,:), 2)), 15);
 else 
-    beta(i) = -pi + acos(dot(n_inc(i,:),z_local(i,:), 2));
+    beta(i) = -pi + round(acos(dot(n_inc(i,:),z_local(i,:), 2)), 15);
 end
 end
 
@@ -144,9 +143,9 @@ end
 gamma = zeros(size(v_inc,1),1);
 for i = 1:size(v_inc,1)
 if dot(v_inc(i,:), z_local(i,:), 2) <= 0
-gamma(i) = acos(dot(v_inc(i,:), r_local(i,:), 2));
+gamma(i) = round(acos(dot(v_inc(i,:), r_local(i,:), 2)), 15);
 else
-gamma(i) = -acos(dot(v_inc(i,:), r_local(i,:), 2));
+gamma(i) = -round(acos(dot(v_inc(i,:), r_local(i,:), 2)), 15);
 end
 end
 
@@ -158,7 +157,7 @@ nr0_inc(i,:) = (n_inc(i,:) - (dot(n_inc(i,:),z_local(i,:), 2) .* z_local(i,:))) 
 if vecnorm(n_inc(i,:) - (dot(n_inc(i,:),z_local(i,:), 2) .* z_local(i,:)),2,2) == 0 || dot(nr0_inc(i,:),r_local(i,:),2) == 0
 psi(i) = 0;
 else
-psi(i) = atan( dot(nr0_inc(i,:),theta_local(i,:), 2) ./ dot(nr0_inc(i,:),r_local(i,:), 2) );
+psi(i) = round(atan( dot(nr0_inc(i,:),theta_local(i,:), 2) ./ dot(nr0_inc(i,:),r_local(i,:), 2) ), 15);
 end
 end
 
@@ -175,9 +174,9 @@ end
 %     end
 % end
 
-x1 = sin(gamma);
-x2 = cos(beta);
-x3 = cos(psi) .* cos(gamma) .* sin(beta) + sin(gamma) .* cos(beta);
+x1 = round(sin(gamma), 15);
+x2 = round(cos(beta), 15);
+x3 = round(cos(psi), 15) .* round(cos(gamma), 15) .* round(sin(beta), 15) + round(sin(gamma), 15) .* round(cos(beta), 15);
 
 y1 = dot(-z_local, v_inc,2);
 y2 = dot(-z_local, n_inc,2);
@@ -205,9 +204,9 @@ f2 = Tk * c2k;
 f3 = Tk * c3k;
 
 %% 7. Calculate alpha_r_gen, alpha_theta_gen, alpha_z_gen
-alpha_r_gen = f1 .* sin(beta) .* cos(psi) + f2 .* cos(gamma);
-alpha_theta_gen = f1 .* sin(beta) .* sin(psi);
-alpha_z_gen = -f1 .* cos(beta) - f2 .* sin(gamma) - f3;
+alpha_r_gen = f1 .* round(sin(beta), 15) .* round(cos(psi), 15) + f2 .* round(cos(gamma), 15);
+alpha_theta_gen = f1 .* round(sin(beta), 15) .* round(sin(psi), 15);
+alpha_z_gen = -f1 .* round(cos(beta), 15) - f2 .* round(sin(gamma), 15) - f3;
 
 alpha_gen = alpha_r_gen.*r_local + alpha_theta_gen.*theta_local + alpha_z_gen.*z_local;
 
@@ -292,7 +291,7 @@ end
 
 function TRG = rotateTriangulationX(TRG, theta)
     % Create the rotation matrix
-    R = [1 0 0; 0 cosd(theta) -sind(theta); 0 sind(theta) cosd(theta)];
+    R = [1 0 0; 0 round(cosd(theta), 15) -round(sind(theta), 15); 0 round(sind(theta), 15) round(cosd(theta), 15)];
     % Rotate the points in the triangulation object
     Points = TRG.Points * R;
     

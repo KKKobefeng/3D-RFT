@@ -1,3 +1,4 @@
+close all
 % Show the tip mesh
 if show_geometry
     figure
@@ -6,14 +7,14 @@ if show_geometry
     view([45 25])
     trisurf(TRG);
     daspect([1 1 1]);
-    xlabel('X');
-    ylabel('Y');
-    zlabel('Z');
-    grid on;
+    xlabel('X  [mm]');
+    ylabel('Y  [mm]');
+    zlabel('Z  [mm]');
     axis on;
+    set(findall(gcf,'-property','FontSize'),'FontSize',14);
     if saveFigures
     set(gcf,'PaperPositionMode','auto')
-    print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/visual_mesh_', object, triangle_size_calculation, '.pdf'));
+    print(gcf, '-dpng', '-r300', '-vector', strcat('./', folder, '/Figures/visual_mesh_', object, triangle_size_calculation, '.png'));
     end
     hold off;
 
@@ -23,14 +24,15 @@ if show_geometry
     colormap summer;
     view([45 25])
     daspect([1 1 1]);
-    xlabel('X');
-    ylabel('Y');
-    zlabel('Z');
-    grid on
-    axis on
+    xlabel('X  [mm]');
+    ylabel('Y  [mm]');
+    zlabel('Z  [mm]');
+    axis on;
+    grid off;
+    set(findall(gcf,'-property','FontSize'),'FontSize',14);
     if saveFigures
     set(gcf,'PaperPositionMode','auto')
-    print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/visual_normals_', object, triangle_size_calculation, '.pdf'));
+    print(gcf, '-dpng', '-r300', '-vector', strcat('./', folder, '/Figures/visual_normals_', object, triangle_size_calculation, '.png'));
     end
     hold off;
 
@@ -38,17 +40,18 @@ if show_geometry
     figure
     view([45 25])
     daspect([1 1 1]);
-    xlabel('x');
-    ylabel('y');
-    zlabel('z');
-    grid on;
+    xlabel('X  [mm]');
+    ylabel('Y  [mm]');
+    zlabel('Z  [mm]');
+    axis on;
     zlim([-inf inf]);
     hold on;
     colormap winter;
     scatter3(points(:,1), points(:,2), points(:,3), 5, 'filled');
+    set(findall(gcf,'-property','FontSize'),'FontSize',14);
     if saveFigures
     set(gcf,'PaperPositionMode','auto')
-    print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/visual_points_', object, triangle_size_calculation, '.pdf'));
+    print(gcf, '-dpng', '-r300', '-vector', strcat('./', folder, '/Figures/visual_points_', object, triangle_size_calculation, '.png'));
     end
     hold off;
 end
@@ -61,14 +64,14 @@ if show_direction
     colormap summer;
     view([45 25])
     daspect([1 1 1]);
-    xlabel('X');
-    ylabel('Y');
-    zlabel('Z');
-    grid on;
+    xlabel('X  [mm]');
+    ylabel('Y  [mm]');
+    zlabel('Z  [mm]');
     axis on;
+    set(findall(gcf,'-property','FontSize'),'FontSize',14);
     if saveFigures
     set(gcf,'PaperPositionMode','auto')
-    print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/visual_direction_vectors_', object, triangle_size_calculation, '.pdf'));
+    print(gcf, '-dpng', '-r300', '-vector', strcat('./', folder, '/Figures/visual_direction_vectors_', object, triangle_size_calculation, '.png'));
     end
     hold off;
 end
@@ -76,23 +79,22 @@ end
 if show_f_quiver
     % Plot forces on each point of the mesh (quiver)
     figure;
-    title ('Forces acting on each subsurface (quiver)');
     view([45 25])
     daspect([1 1 1]);
-    xlabel('x');
-    ylabel('y');
-    zlabel('z');
+    xlabel('X  [mm]');
+    ylabel('Y  [mm]');
+    zlabel('Z  [mm]');
     zlim([-inf inf]);
-    grid on;
     hold on;
     trimesh(TRGVisual, 'LineWidth', 0.1, 'EdgeColor', '#888888', 'FaceAlpha', 0);
     %trisurf(TRG)
     q = quiver3(c_inc(:,1), c_inc(:,2), c_inc(:,3), -F(:,1), -F(:,2), -F(:,3),2, 'LineWidth', 1, 'MaxHeadSize', 0);
     currentColormap = jet;
     SetQuiverColor(q,currentColormap);
+    set(findall(gcf,'-property','FontSize'),'FontSize',14);
     if saveFigures
     set(gcf,'PaperPositionMode','auto')
-    print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/forces_quiver_', object, triangle_size_calculation, '.pdf'));
+    print(gcf, '-dpng', '-r300', '-vector', strcat('./', folder, '/Figures/forces_quiver_', object, triangle_size_calculation, '.png'));
     end
     hold off;
 end
@@ -100,24 +102,22 @@ end
 if show_f_scatter
     % Plot forces on each point of the mesh (scatter)
     figure;
-    title ('Forces acting on each subsurface (scatter)');
     view([45 25])
     daspect([1 1 1]);
-    xlabel('x');
-    ylabel('y');
-    zlabel('z');
+    xlabel('X  [mm]');
+    ylabel('Y  [mm]');
+    zlabel('Z  [mm]');
     zlim([-inf inf]);
-    grid on;
     hold on;
     trimesh(TRGVisual, 'LineWidth', 0.1, 'EdgeColor', '#888888', 'FaceAlpha', 0);
     %trisurf(TRG)
     scatter3(c_inc(:,1), c_inc(:,2), c_inc(:,3), 'filled', 'MarkerEdgeColor', 'none', 'CData', vecnorm(f, 2, 2), 'SizeData', 500*abs(vecnorm(f, 2, 2)));
     colormap(jet);
     clim([min(vecnorm(f, 2, 2)) max(vecnorm(f, 2, 2))]);
-    colorbar;
+    set(findall(gcf,'-property','FontSize'),'FontSize',14);
     if saveFigures
     set(gcf,'PaperPositionMode','auto')
-    print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/forces_scatter_', object, triangle_size_calculation, '.pdf'));
+    print(gcf, '-dpng', '-r300', '-vector', strcat('./', folder, '/Figures/forces_scatter_', object, triangle_size_calculation, '.png'));
     end
     hold off;
 end
@@ -213,6 +213,8 @@ if show_f_scatterxyz
     % Define figure size and aspect ratio
     aspect_ratio = [1, 1, 1]; % aspect ratio for each subplot
     % Create figure
+    fig_width = 1500;
+    fig_height = 500;
     figure('Units', 'pixels', 'Position', [0, 0, fig_width, fig_height]);
     % Define common plot settings
     view_angle = [45, 25];
@@ -222,58 +224,60 @@ if show_f_scatterxyz
     % Plot forces on each point of the mesh (scatter x)
     subplot(1, 3, 1);
     hold on;
-    xlabel('x [mm]');
-    ylabel('y [mm]');
-    zlabel('z [mm]');
-    title('\bf{f_X [N/m²]}');
+    title('\bf{f_X [N/mm²]}');
+    xlabel('X  [mm]');
+    ylabel('Y  [mm]');
+    zlabel('Z  [mm]');
     trimesh(TRGVisual, 'LineWidth', 0.1, 'EdgeColor', '#888888', 'FaceAlpha', 0);
-    scatter3(c_inc(:,1), c_inc(:,2), c_inc(:,3), 'filled', 'MarkerEdgeColor', 'none', 'CData', f(:,1), 'SizeData', 500*max(max(abs(f)))/max(abs(f(:,2)))*abs(f(:,1))); % -f just because of inverted colorbar
+    scatter3(c_inc(:,1), c_inc(:,2), c_inc(:,3), 'filled', 'MarkerEdgeColor', 'none', 'CData', f(:,1), 'SizeData', 250*max(max(abs(f)))/max(abs(f(:,2)))*abs(f(:,1))); % -f just because of inverted colorbar
     colormap(jet);
     clim([-max(max(abs(f))) max(max(abs(f)))]);
     c = colorbar;
     c.Ticks = [-max(max(abs(f))) 0 max(max(abs(f)))];
-    c.Location = 'south';
+    c.Location = 'southoutside';
     view(view_angle);
     set(gca, 'DataAspectRatio', aspect_ratio);
     hold off;
     % Plot forces on each point of the mesh (scatter y)
     subplot(1, 3, 2);
     hold on;
-    xlabel('x [mm]');
-    ylabel('y [mm]');
-    zlabel('z [mm]');
-    title('\bf{f_Y [N/m²]}');
+    title('\bf{f_Y [N/mm²]}');
+    xlabel('X  [mm]');
+    ylabel('Y  [mm]');
+    zlabel('Z  [mm]');
     trimesh(TRGVisual, 'LineWidth', 0.1, 'EdgeColor', '#888888', 'FaceAlpha', 0);
-    scatter3(c_inc(:,1), c_inc(:,2), c_inc(:,3), 'filled', 'MarkerEdgeColor', 'none', 'CData', f(:,2), 'SizeData', 500*max(max(abs(f)))/max(abs(f(:,2)))*abs(f(:,2)));
+    scatter3(c_inc(:,1), c_inc(:,2), c_inc(:,3), 'filled', 'MarkerEdgeColor', 'none', 'CData', f(:,2), 'SizeData', 250*max(max(abs(f)))/max(abs(f(:,2)))*abs(f(:,2)));
     colormap(jet);
     clim([-max(max(abs(f))) max(max(abs(f)))]);
     c = colorbar;
     c.Ticks = [-max(max(abs(f))) 0 max(max(abs(f)))];
-    c.Location = 'south';
+    c.Location = 'southoutside';
     view(view_angle);
     set(gca, 'DataAspectRatio', aspect_ratio);
     hold off;
     % Plot forces on each point of the mesh (scatter z)
     subplot(1, 3, 3);
     hold on;
-    xlabel('x [mm]');
-    ylabel('y [mm]');
-    zlabel('z [mm]');
-    title('\bf{f_Z [N/m²]}');
+    title('\bf{f_Z [N/mm²]}');
+    xlabel('X  [mm]');
+    ylabel('Y  [mm]');
+    zlabel('Z  [mm]');
     trimesh(TRGVisual, 'LineWidth', 0.1, 'EdgeColor', '#999999', 'FaceAlpha', 0);
-    scatter3(c_inc(:,1), c_inc(:,2), c_inc(:,3), 'filled', 'MarkerEdgeColor', 'none', 'CData', f(:,3), 'SizeData', 500*max(max(abs(f)))/max(abs(f(:,2)))*abs(f(:,3)));
+    scatter3(c_inc(:,1), c_inc(:,2), c_inc(:,3), 'filled', 'MarkerEdgeColor', 'none', 'CData', f(:,3), 'SizeData', 250*max(max(abs(f)))/max(abs(f(:,2)))*abs(f(:,3)));
     colormap(jet);
     clim([-max(max(abs(f))) max(max(abs(f)))]);
     c = colorbar;
     c.Ticks = [-max(max(abs(f))) 0 max(max(abs(f)))];
-    c.Location = 'south';
+    c.Location = 'southoutside';
     view(view_angle);
     set(gca, 'DataAspectRatio', aspect_ratio);
+    set(findall(gcf, 'Type', 'Text'), 'FontSize', 14);
+    set(findall(gcf, 'Type', 'Colorbar'), 'FontSize', 14);
     hold off;
     % Save figure
     if saveFigures
     set(gcf,'PaperPositionMode','auto')
-    print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/forces_scatter_xyz_', object, triangle_size_calculation, '.pdf'));
+    print(gcf, '-dpng', '-r300', '-vector', strcat('./', folder, '/Figures/forces_scatter_xyz_', object, triangle_size_calculation, '.png'));
     end
 end
 
