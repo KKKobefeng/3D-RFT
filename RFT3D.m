@@ -3,19 +3,19 @@
 
 %% Define inputs - Agarwal verification studies
 folder = 'robottip';  % Cylinder, Simple, PlateAnchor or RobotTip
-object = 'tipnr8';  % Name of stl
+object = 'tipnr0';  % Name of stl
 triangle_size_calculation = 'Normal';  % 'Fine', 'Normal', 'Rough', 'VeryRough'
-triangle_size_visualization = 'VeryRough';  % 'Fine', 'Normal', 'Rough', 'VeryRough'
+triangle_size_visualization = 'Normal';  % 'Fine', 'Normal', 'Rough', 'VeryRough'
 rotation = true;  % true or false
-linear_velocity = 0.01;  % linear velocity in m/s
+linear_velocity = 0.006;  % linear velocity in m/s
 direction_angle_xz = -90 * pi / 180;  % angle between direction and x-z-axis
 direction_angle_y = -90 * pi / 180;  % angle between direction and y-axis
-angular_velocity = [0, 0, -10*pi];  % angular velocity in rad/s
-rho_c = 1600;  % bulk density of the sand in kg/m³   
+angular_velocity = [0, 0, -4/3*pi];  % angular velocity in rad/s
+rho_c = 1450;  % bulk density of the sand in kg/m³   
 mu_int = 1.07;  % internal friction coefficient of the sand
 mu_surf = 0.4;  % intruder-surface interaction coefficient
 gravity = 9.81;  % gravity in m/s²
-depth = 0.15;  % in m
+depth = 0.08;  % in m
 
 %direction_vector = [1 1 0];
 direction_vector = [round(cos(direction_angle_xz), 15) round(cos(direction_angle_y), 15) round(sin(direction_angle_xz), 15)];
@@ -56,8 +56,8 @@ area = (generateArea(TRG.Points', TRG.ConnectivityList')).';
 %% Plots
 RFTPlots
 
-row_results = [depth, forces_x, forces_y, forces_z, torque_x, torque_y, torque_z];
-results = vertcat(results, row_results);
+col_results = [depth; forces_x; forces_y; forces_z; torque_x; torque_y; torque_z];
+results = horzcat(results, col_results);
 
 function areaarray = generateArea(Points,List)
     % Compute the side lengths of the triangles once
