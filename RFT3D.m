@@ -1,13 +1,13 @@
 %% NOTES - TODO
-%results = [];
+results = [];
 
 %% Define inputs - Agarwal verification studies
 folder = 'robottip';  % Cylinder, Simple, PlateAnchor or RobotTip
-object = 'tipnr0';  % Name of stl
+object = 'shaft1';  % Name of stl
 triangle_size_calculation = 'Normal';  % 'Fine', 'Normal', 'Rough', 'VeryRough'
-triangle_size_visualization = 'Normal';  % 'Fine', 'Normal', 'Rough', 'VeryRough'
+triangle_size_visualization = 'Rough';  % 'Fine', 'Normal', 'Rough', 'VeryRough'
 rotation = true;  % true or false
-linear_velocity = 0.006;  % linear velocity in m/s
+linear_velocity = 0.000;  % linear velocity in m/s
 direction_angle_xz = -90 * pi / 180;  % angle between direction and x-z-axis
 direction_angle_y = -90 * pi / 180;  % angle between direction and y-axis
 angular_velocity = [0, 0, -4/3*pi];  % angular velocity in rad/s
@@ -15,7 +15,7 @@ rho_c = 1450;  % bulk density of the sand in kg/m³
 mu_int = 1.07;  % internal friction coefficient of the sand
 mu_surf = 0.4;  % intruder-surface interaction coefficient
 gravity = 9.81;  % gravity in m/s²
-depth = 0.08;  % in m
+depth = 0.12;  % in m
 
 %direction_vector = [1 1 0];
 direction_vector = [round(cos(direction_angle_xz), 15) round(cos(direction_angle_y), 15) round(sin(direction_angle_xz), 15)];
@@ -27,7 +27,7 @@ show_direction = false;
 show_f_quiver = false;
 show_alpha = false;
 
-show_f_scatter = false;
+show_f_scatter = true;
 show_f_scatterxyz = false;
 
 show_linear_f = false;
@@ -40,8 +40,8 @@ unit_test = false;
 TRG = stlread(strcat('./', folder, '/Models/', object, triangle_size_calculation, '.stl'));  % Mesh size for calculation
 TRG_visual = stlread(strcat('./', folder, '/Models/', object, triangle_size_visualization, '.stl'));  % Mesh size for force plots
 
-TRG = rotate_triangulation_x(TRG, -90);  % Rotate TRG object
-TRG_visual = rotate_triangulation_x(TRG_visual, -90);
+TRG = rotate_triangulation_x(TRG, -0);  % Rotate TRG object
+TRG_visual = rotate_triangulation_x(TRG_visual, -0);
 
 TRG = move_triangulation_z(TRG, depth);  % Align bottom of object with depth input
 TRG_visual = move_triangulation_z(TRG_visual, depth);
