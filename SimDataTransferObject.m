@@ -2,6 +2,7 @@ classdef SimDataTransferObject
     %SimDataTransferObject
 
     properties
+        points;
         c_inc;
         v_norm_vec; 
         F; 
@@ -23,9 +24,10 @@ classdef SimDataTransferObject
     end
 
     methods
-        function obj = SimDataTransferObject(c_inc, v_norm_vec, F, f, forces_x, ...
+        function obj = SimDataTransferObject(points, c_inc, v_norm_vec, F, f, forces_x, ...
                 forces_y, forces_z, forces, T, torque_x, torque_y, torque_z, ...
                 alpha_gen, alpha_gen_n, alpha_gen_t, alpha, TRG, TRG_visual)
+            obj.points = points;
             obj.c_inc = c_inc;
             obj.v_norm_vec = v_norm_vec;
             obj.F = F;

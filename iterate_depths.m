@@ -3,7 +3,7 @@ clear
 close
 
 start_depth = 0;
-end_depth = 0.125;
+end_depth = 0.06;
 step_size = 0.005;
 num_steps = (end_depth - start_depth)./step_size;
 
@@ -15,7 +15,7 @@ show_f_quiver = false;
 show_alpha = false;
 
 show_f_scatter = false;
-show_f_scatterxyz = true;
+show_f_scatterxyz = false;
 
 show_linear_f = false;
 
@@ -30,10 +30,11 @@ z = zeros(1, num_steps);
 
 for cur_depth = start_depth:step_size:end_depth
     sim_data_dtos(step) = RFT3D(cur_depth);
-    z(step) = sim_data_dtos(step).forces_z;
+    z(step) = sim_data_dtos(step).forces_x;
     step = step + 1;
 end
 
+points = sim_data_dtos(end).points;
 c_inc = sim_data_dtos(end).c_inc;
 v_norm_vec = sim_data_dtos(end).v_norm_vec;
 F = sim_data_dtos(end).F;
@@ -56,4 +57,4 @@ TRG_visual = sim_data_dtos(end).TRG_visual;
 RFTPlots
 
 figure
-plot(depths, z)
+plot(depths, abs(z), 'LineWidth', 1.5)

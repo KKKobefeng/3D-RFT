@@ -1,18 +1,18 @@
 function sim_data_dto = RFT3D(depth)
 
 %% Define inputs - Agarwal verification studies
-folder = 'cylinder';        % Cylinder, Simple, PlateAnchor or RobotTip
-object = 'cylinder';          % Name of stl
+folder = 'simple';        % Cylinder, Simple, PlateAnchor or RobotTip
+object = 'ploughforward';          % Name of stl
 triangle_size_calculation = 'Normal';   % 'Fine', 'Normal', 'Rough', 'VeryRough'
-triangle_size_visualization = 'Rough';  % 'Fine', 'Normal', 'Rough', 'VeryRough'
-rotation = true;                        % true or false
+triangle_size_visualization = 'Normal';  % 'Fine', 'Normal', 'Rough', 'VeryRough'
+rotation = false;                        % true or false
 linear_velocity = 0.1;                % linear velocity in m/s
-direction_angle_xz = -90 * pi / 180;    % angle between direction and x-z-axis
+direction_angle_xz = -0 * pi / 180;    % angle between direction and x-z-axis
 direction_angle_y = -90 * pi / 180;     % angle between direction and y-axis
 angular_velocity = [0, 0, -1*pi];     % angular velocity in rad/s
-rho_c = 1310;               % bulk density of the sand in kg/m³   
-mu_int = 0.21;              % internal friction coefficient of the sand
-mu_surf = 0.4;             % intruder-surface interaction coefficient
+rho_c = 1701;               % bulk density of the sand in kg/m³   
+mu_int = 0.62;              % internal friction coefficient of the sand
+mu_surf = 0.32;             % intruder-surface interaction coefficient
 gravity = 9.81;             % gravity in m/s²
 
 %direction_vector = [1 1 0];
@@ -37,7 +37,7 @@ area = (generateArea(TRG.Points', TRG.ConnectivityList')).';
 %% Compute forces using 3D-RFT function
 
 [c_inc, v_norm_vec, F, f, forces_x, forces_y, forces_z, forces, T, torque_x, torque_y, torque_z, alpha_gen, alpha_gen_n, alpha_gen_t, alpha] = RFT3Dfunc(points, normals, area, rotation, angular_velocity, linear_velocity, direction_vector, rho_c, mu_int, mu_surf, gravity, unit_test);
-sim_data_dto = SimDataTransferObject(c_inc, v_norm_vec, F, f, forces_x, forces_y, forces_z, forces, T, torque_x, torque_y, torque_z, alpha_gen, alpha_gen_n, alpha_gen_t, alpha, TRG, TRG_visual);
+sim_data_dto = SimDataTransferObject(points, c_inc, v_norm_vec, F, f, forces_x, forces_y, forces_z, forces, T, torque_x, torque_y, torque_z, alpha_gen, alpha_gen_n, alpha_gen_t, alpha, TRG, TRG_visual);
 
 
 end 
