@@ -2,7 +2,7 @@ function sim_data_dto = RFT3D(depth)
 
 %% Define inputs - Agarwal verification studies
 folder = 'simple';        % Cylinder, Simple, PlateAnchor or RobotTip
-object = 'ploughforward';          % Name of stl
+object = 'Block50';          % Name of stl
 triangle_size_calculation = 'Normal';   % 'Fine', 'Normal', 'Rough', 'VeryRough'
 triangle_size_visualization = 'Normal';  % 'Fine', 'Normal', 'Rough', 'VeryRough'
 rotation = false;                        % true or false
@@ -10,7 +10,7 @@ linear_velocity = 0.1;                % linear velocity in m/s
 direction_angle_xz = -0 * pi / 180;    % angle between direction and x-z-axis
 direction_angle_y = -90 * pi / 180;     % angle between direction and y-axis
 angular_velocity = [0, 0, -1*pi];     % angular velocity in rad/s
-rho_c = 1701;               % bulk density of the sand in kg/m³   
+rho_c = 1640;               % bulk density of the sand in kg/m³   
 mu_int = 0.62;              % internal friction coefficient of the sand
 mu_surf = 0.32;             % intruder-surface interaction coefficient
 gravity = 9.81;             % gravity in m/s²

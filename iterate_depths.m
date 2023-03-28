@@ -3,7 +3,7 @@ clear
 close
 
 start_depth = 0;
-end_depth = 0.06;
+end_depth = 0.10;
 step_size = 0.005;
 num_steps = (end_depth - start_depth)./step_size;
 
