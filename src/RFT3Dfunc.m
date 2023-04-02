@@ -1,39 +1,18 @@
-function [c_inc, v_norm_vec, F, f, forces_x, forces_y, forces_z, forces, T, torque_x, torque_y, torque_z, alpha_gen, alpha_gen_n, alpha_gen_t, alpha] = RFT3Dfunc(points, normals, area, rotation, angular_velocity, linear_velocity, direction_vector, rho_c, mu_int, mu_surf, gravity, unit_test)
-%% 1. Read Tip Data
-tic
-threshold = 1.0e-10;
-point_list = points;
-area_list = area/1000000; % mm² to m²
-normal_vectors = normals;
-depth_list = point_list(:,3)/1000; % mm to m
+function [c_inc, F, f, forces_x, forces_y, forces_z, forces, T, torque_x, torque_y, torque_z, alpha_gen, alpha_gen_n, alpha_gen_t, alpha] = RFT3Dfunc(points, normals, areas, depth_list, rho_c, mu_int, mu_surf, gravity, unit_test, threshold, v_norm_vec, v_vec)
 
 %% 2. Calc velocity
-nElements = size(point_list, 1);
 
-vcor = linear_velocity .* direction_vector .* 1000; 
-v_vec = ones(nElements,1) .* vcor ;
-
-if rotation
-    r_list = [point_list(:,1) point_list(:,2) point_list(:,3) + ones(nElements,1) .* 100];
-    v_sum = cross(ones(nElements,1) .* angular_velocity, r_list) + v_vec;
-    v_vec= round(v_sum, 15);
-end
-
-v_norm_vec = v_vec ./ vecnorm(v_vec, 2, 2);
-
-v_vec(abs(v_vec) < threshold) = 0;
-v_norm_vec(abs(v_norm_vec) < threshold) = 0;
 
 %% 3. Check conditions
-is_leading_edge = dot(normal_vectors, v_norm_vec, 2) >= 0;
-is_intruding = point_list(:,3) < 0;
+is_leading_edge = dot(normals, v_norm_vec, 2) >= -threshold;
+is_intruding = points(:,3) < 0;
 include = is_leading_edge & is_intruding;
 
-n_inc = normal_vectors(include,:);
+n_inc = normals(include,:);
 v_inc = v_norm_vec(include,:);
 v_nn_inc = v_vec(include,:);
-a_inc = area_list(include,:);
-c_inc = point_list(include,:);
+a_inc = areas(include,:);
+c_inc = points(include,:);
 d_inc = depth_list(include,:);
 
 if unit_test
@@ -218,5 +197,4 @@ T = [T_x(:,1) T_y(:,2) T_z(:,3)];
 [torque_x] = sum(T_x(:,1), 1);
 [torque_y] = sum(T_y(:,2), 1);
 [torque_z] = sum(T_z(:,3), 1);
-toc
 end

@@ -408,6 +408,11 @@ if show_linear_f
 end
 
 
+if show_depth_dependend
+    figure
+    plot(depths, abs(result_depth_dependend), 'LineWidth', 1.5);
+end
+
 function SetQuiverColor(q,currentColormap,varargin)
 %// Set default values
 range = [];

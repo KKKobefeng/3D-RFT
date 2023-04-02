@@ -1,17 +1,17 @@
 % Iterate through depth 
 clear
 close
-tips = {'tipnr1', 'tipnr2', 'tipnr3'};
+tips = {'tipnr4', 'tipnr5', 'tipnr6', 'tipnr7', 'tipnr8'};
 
 figure
 hold on;
 
-for index = 1:1:3
 start_depth = 0;
 end_depth = 0.13;
 step_size = 0.01;
 num_steps = (end_depth - start_depth)./step_size;
 
+for index = 1:1:5
 %% Define inputs - Agarwal verification studies
 folder = 'robottip';        % Cylinder, Simple, PlateAnchor or RobotTip
 object = tips{index};          % Name of stl
