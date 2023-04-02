@@ -1,4 +1,5 @@
-function [points, normals, areas, depth_list] = readStlData(TRG, Points, List)
+function [points, normals, areas, depth_list] = getStlData(TRG, Points, List)
+    
     points = (incenter(TRG)').';
     normals = (faceNormal(TRG)').';
 
@@ -10,5 +11,6 @@ function [points, normals, areas, depth_list] = readStlData(TRG, Points, List)
 
     areas = areaarray.' / 1000000;                          % mm2 to m2
     depth_list = points(:,3) / 1000;                        % mm to m
+    
 end
 

@@ -58,7 +58,7 @@ end
 if show_direction
     % Create a quiver plot with the direction vectors
     figure
-    quiver3(points(:,1), points(:,2), points(:,3), v_norm_vec(:,1), v_norm_vec(:,2), v_norm_vec(:,3), 1.25);
+    quiver3(points(:,1), points(:,2), points(:,3), movement(:,1), movement(:,2), movement(:,3), 1.25);
     title ('Direction vectors of rotation and translation');
     colormap summer;
     view([45 25])
@@ -87,7 +87,7 @@ if show_f_quiver
     hold on;
     trimesh(TRG_visual, 'LineWidth', 0.1, 'EdgeColor', '#888888', 'FaceAlpha', 0);
     %trisurf(TRG)
-    q = quiver3(c_inc(:,1), c_inc(:,2), c_inc(:,3), -F(:,1), -F(:,2), -F(:,3),2, 'LineWidth', 1, 'MaxHeadSize', 0);
+    q = quiver3(points_include(:,1), points_include(:,2), points_include(:,3), -forces(:,1), -forces(:,2), -forces(:,3),2, 'LineWidth', 1, 'MaxHeadSize', 0);
     currentColormap = jet;
     SetQuiverColor(q,currentColormap);
     set(findall(gcf,'-property','FontSize'),'FontSize',14);
@@ -110,9 +110,9 @@ if show_f_scatter
     hold on;
     trimesh(TRG_visual, 'LineWidth', 0.1, 'EdgeColor', '#888888', 'FaceAlpha', 0);
     %trisurf(TRG)
-    scatter3(c_inc(:,1), c_inc(:,2), c_inc(:,3), 'filled', 'MarkerEdgeColor', 'none', 'CData', vecnorm(f, 2, 2), 'SizeData', 250*abs(vecnorm(f, 2, 2)));
+    scatter3(points_include(:,1), points_include(:,2), points_include(:,3), 'filled', 'MarkerEdgeColor', 'none', 'CData', vecnorm(pressures, 2, 2), 'SizeData', 250*abs(vecnorm(pressures, 2, 2)));
     colormap(jet);
-    clim([min(vecnorm(f, 2, 2)) max(vecnorm(f, 2, 2))]);
+    clim([min(vecnorm(pressures, 2, 2)) max(vecnorm(pressures, 2, 2))]);
     set(findall(gcf,'-property','FontSize'),'FontSize',14);
     if saveFigures
     set(gcf,'PaperPositionMode','auto')
@@ -120,91 +120,6 @@ if show_f_scatter
     end
     hold off;
 end
-
-
-%     % Plot forces on each point of the mesh (scatter x)
-%     figure;
-%     %title ('f_X [N/m^2]');
-%     view([45 25])
-%     %view([-45 -10])  % bunny drill
-%     daspect([1 1 1]);
-%     xlabel('x');
-%     ylabel('y');
-%     zlabel('z');
-%     zlim([-inf inf]);
-%     grid off;
-%     hold on;
-%     trimesh(TRG_visual, 'LineWidth', 0.1, 'EdgeColor', '#888888', 'FaceAlpha', 0);
-%     %trisurf(TRG)
-%     scatter3(c_inc(:,1), c_inc(:,2), c_inc(:,3), 'filled', 'MarkerEdgeColor', 'none', 'CData', f(:,1), 'SizeData', 500*max(max(abs(f)))/max(abs(f(:,2)))*abs(f(:,1))); % -f just because of inverted colorbar
-%     colormap(jet);
-%     %colormap(brewermap([],"-RdYlBu"));
-%     clim([-max(max(abs(f))) max(max(abs(f)))]);
-%     c = colorbar;
-%     c.Ticks = [-max(max(abs(f))) 0 max(max(abs(f)))];
-%     c.Label.String = '\bf{f_X [N/m²]}';
-%     c.Location = 'northoutside';
-%     if saveFigures
-%     set(gcf,'PaperPositionMode','auto')
-%     print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/forces_scatter_x_', object, triangle_size_calculation, '.pdf'));
-%     end
-%     hold off;
-% 
-%     % Plot forces on each point of the mesh (scatter y)
-%     figure;
-%     %title ('f_Y [N/m^2]');
-%     view([45 25])
-%     %view([-45 -10])  % bunny drill
-%     daspect([1 1 1]);
-%     xlabel('x');
-%     ylabel('y');
-%     zlabel('z');
-%     zlim([-inf inf]);
-%     grid off;
-%     hold on;
-%     trimesh(TRG_visual, 'LineWidth', 0.1, 'EdgeColor', '#888888', 'FaceAlpha', 0);
-%     %trisurf(TRG)
-%     scatter3(c_inc(:,1), c_inc(:,2), c_inc(:,3), 'filled', 'MarkerEdgeColor', 'none', 'CData', f(:,2), 'SizeData', 500*max(max(abs(f)))/max(abs(f(:,2)))*abs(f(:,2)));
-%     colormap(jet);
-%     %colormap(brewermap([],"-RdYlBu"));
-%     clim([-max(max(abs(f))) max(max(abs(f)))]);
-%     c = colorbar;
-%     c.Ticks = [-max(max(abs(f))) 0 max(max(abs(f)))];
-%     c.Label.String = '\bf{f_Y [N/m²]}';
-%     c.Location = 'northoutside';
-%     if saveFigures
-%     set(gcf,'PaperPositionMode','auto')
-%     print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/forces_scatter_y_', object, triangle_size_calculation, '.pdf'));
-%     end
-%     hold off;
-% 
-%     % Plot forces on each point of the mesh (scatter z)
-%     figure;
-%     %title ('f_Z [N/m^2]');
-%     view([45 25])
-%     %view([-45 -10])  % bunny drill
-%     daspect([1 1 1]);
-%     xlabel('x');
-%     ylabel('y');
-%     zlabel('z');
-%     zlim([-inf inf]);
-%     grid off;
-%     hold on;
-%     trimesh(TRG_visual, 'LineWidth', 0.1, 'EdgeColor', '#999999', 'FaceAlpha', 0);
-%     %trisurf(TRG)
-%     scatter3(c_inc(:,1), c_inc(:,2), c_inc(:,3), 'filled', 'MarkerEdgeColor', 'none', 'CData', f(:,3), 'SizeData', 500*max(max(abs(f)))/max(abs(f(:,2)))*abs(f(:,3)));
-%     colormap(jet);
-%     %colormap(brewermap([],"YlOrRd"));
-%     clim([-max(max(abs(f))) max(max(abs(f)))]);
-%     c = colorbar;
-%     c.Ticks = [-max(max(abs(f))) 0 max(max(abs(f)))];
-%     c.Label.String = '\bf{f_Z [N/m²]}';
-%     c.Location = 'northoutside';
-%     if saveFigures
-%     set(gcf,'PaperPositionMode','auto')
-%     print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/forces_scatter_z_', object, triangle_size_calculation, '.pdf'));
-%     end
-%     hold off;
 
 
 if show_f_scatterxyz
@@ -228,11 +143,11 @@ if show_f_scatterxyz
     ylabel('Y  [mm]');
     zlabel('Z  [mm]');
     trimesh(TRG_visual, 'LineWidth', 0.1, 'EdgeColor', '#888888', 'FaceAlpha', 0);
-    scatter3(c_inc(:,1), c_inc(:,2), c_inc(:,3), 'filled', 'MarkerEdgeColor', 'none', 'CData', f(:,1), 'SizeData', 250*max(max(abs(f)))/max(abs(f(:,2)))*abs(f(:,1))); % -f just because of inverted colorbar
+    scatter3(points_include(:,1), points_include(:,2), points_include(:,3), 'filled', 'MarkerEdgeColor', 'none', 'CData', pressures(:,1), 'SizeData', 250*max(max(abs(pressures)))/max(abs(pressures(:,2)))*abs(pressures(:,1))); % -f just because of inverted colorbar
     colormap(jet);
-    clim([-max(max(abs(f))) max(max(abs(f)))]);
+    clim([-max(max(abs(pressures))) max(max(abs(pressures)))]);
     c = colorbar;
-    c.Ticks = [-max(max(abs(f))) 0 max(max(abs(f)))];
+    c.Ticks = [-max(max(abs(pressures))) 0 max(max(abs(pressures)))];
     c.Location = 'southoutside';
     view(view_angle);
     set(gca, 'DataAspectRatio', aspect_ratio);
@@ -245,11 +160,11 @@ if show_f_scatterxyz
     ylabel('Y  [mm]');
     zlabel('Z  [mm]');
     trimesh(TRG_visual, 'LineWidth', 0.1, 'EdgeColor', '#888888', 'FaceAlpha', 0);
-    scatter3(c_inc(:,1), c_inc(:,2), c_inc(:,3), 'filled', 'MarkerEdgeColor', 'none', 'CData', f(:,2), 'SizeData', 250*max(max(abs(f)))/max(abs(f(:,2)))*abs(f(:,2)));
+    scatter3(points_include(:,1), points_include(:,2), points_include(:,3), 'filled', 'MarkerEdgeColor', 'none', 'CData', pressures(:,2), 'SizeData', 250*max(max(abs(pressures)))/max(abs(pressures(:,2)))*abs(pressures(:,2)));
     colormap(jet);
-    clim([-max(max(abs(f))) max(max(abs(f)))]);
+    clim([-max(max(abs(pressures))) max(max(abs(pressures)))]);
     c = colorbar;
-    c.Ticks = [-max(max(abs(f))) 0 max(max(abs(f)))];
+    c.Ticks = [-max(max(abs(pressures))) 0 max(max(abs(pressures)))];
     c.Location = 'southoutside';
     view(view_angle);
     set(gca, 'DataAspectRatio', aspect_ratio);
@@ -262,11 +177,11 @@ if show_f_scatterxyz
     ylabel('Y  [mm]');
     zlabel('Z  [mm]');
     trimesh(TRG_visual, 'LineWidth', 0.1, 'EdgeColor', '#999999', 'FaceAlpha', 0);
-    scatter3(c_inc(:,1), c_inc(:,2), c_inc(:,3), 'filled', 'MarkerEdgeColor', 'none', 'CData', f(:,3), 'SizeData', 250*max(max(abs(f)))/max(abs(f(:,2)))*abs(f(:,3)));
+    scatter3(points_include(:,1), points_include(:,2), points_include(:,3), 'filled', 'MarkerEdgeColor', 'none', 'CData', pressures(:,3), 'SizeData', 250*max(max(abs(pressures)))/max(abs(pressures(:,2)))*abs(pressures(:,3)));
     colormap(jet);
-    clim([-max(max(abs(f))) max(max(abs(f)))]);
+    clim([-max(max(abs(pressures))) max(max(abs(pressures)))]);
     c = colorbar;
-    c.Ticks = [-max(max(abs(f))) 0 max(max(abs(f)))];
+    c.Ticks = [-max(max(abs(pressures))) 0 max(max(abs(pressures)))];
     c.Location = 'southoutside';
     view(view_angle);
     set(gca, 'DataAspectRatio', aspect_ratio);
@@ -293,7 +208,7 @@ if show_alpha
     hold on;
     trimesh(TRG_visual, 'LineWidth', 0.1, 'EdgeColor', '#888888', 'FaceAlpha', 0);
     %trisurf(TRG)
-    q = quiver3(c_inc(:,1), c_inc(:,2), c_inc(:,3), alpha_gen(:,1), alpha_gen(:,2), alpha_gen(:,3),2, 'LineWidth', 2, 'ShowArrowHead','on', 'MaxHeadSize', 5);
+    q = quiver3(points_include(:,1), points_include(:,2), points_include(:,3), alpha_gen(:,1), alpha_gen(:,2), alpha_gen(:,3),2, 'LineWidth', 2, 'ShowArrowHead','on', 'MaxHeadSize', 5);
     currentColormap = jet;
     SetQuiverColor(q,currentColormap);
     if saveFigures
@@ -314,7 +229,7 @@ if show_alpha
     hold on;
     trimesh(TRG_visual, 'LineWidth', 0.1, 'EdgeColor', '#888888', 'FaceAlpha', 0);
     %trisurf(TRG)
-    q = quiver3(c_inc(:,1), c_inc(:,2), c_inc(:,3), alpha_gen_n(:,1), alpha_gen_n(:,2), alpha_gen_n(:,3),2, 'LineWidth', 2, 'ShowArrowHead','on', 'MaxHeadSize', 5);
+    q = quiver3(points_include(:,1), points_include(:,2), points_include(:,3), alpha_gen_n(:,1), alpha_gen_n(:,2), alpha_gen_n(:,3),2, 'LineWidth', 2, 'ShowArrowHead','on', 'MaxHeadSize', 5);
     currentColormap = jet;
     SetQuiverColor(q,currentColormap);
     if saveFigures
@@ -335,7 +250,7 @@ if show_alpha
     hold on;
     trimesh(TRG_visual, 'LineWidth', 0.1, 'EdgeColor', '#888888', 'FaceAlpha', 0);
     %trisurf(TRG)
-    q = quiver3(c_inc(:,1), c_inc(:,2), c_inc(:,3), alpha_gen_t(:,1), alpha_gen_t(:,2), alpha_gen_t(:,3),2, 'LineWidth', 2, 'ShowArrowHead','on', 'MaxHeadSize', 5);
+    q = quiver3(points_include(:,1), points_include(:,2), points_include(:,3), alpha_gen_t(:,1), alpha_gen_t(:,2), alpha_gen_t(:,3),2, 'LineWidth', 2, 'ShowArrowHead','on', 'MaxHeadSize', 5);
     currentColormap = jet;
     SetQuiverColor(q,currentColormap);
     if saveFigures
@@ -349,7 +264,7 @@ end
 if show_linear_f
     % Plot linear graph forces - depth
     x_depth = [0.1 0.1 0.1];
-    y_forces = [forces_x forces_y forces_z];
+    y_forces = [force_x force_y force_z];
     y_forces_agarwal = [0 0 42.55];  % pi --> 42.55 ; 0.5pi --> 53.80 ; 0.25pi --> 59.35
     figure;
     for i=1:3
