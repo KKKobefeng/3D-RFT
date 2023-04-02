@@ -8,98 +8,130 @@ hold on;
 
 start_depth = 0;
 end_depth = 0.13;
-step_size = 0.01;
+step_size = 0.05;
 num_steps = (end_depth - start_depth)./step_size;
 
 for index = 1:1:5
-%% Define inputs - Agarwal verification studies
-folder = 'robottip';        % Cylinder, Simple, PlateAnchor or RobotTip
-object = tips{index};          % Name of stl
-triangle_size_calculation = 'normal';   % 'Fine', 'Normal', 'Rough', 'VeryRough'
-triangle_size_visualization = 'veryrough';  % 'Fine', 'Normal', 'Rough', 'VeryRough'
-rotation = true;                        % true or false
-linear_velocity = 0.01;                % linear velocity in m/s
-direction_angle_xz = -90 * pi / 180;    % angle between direction and x-z-axis
-direction_angle_y = -90 * pi / 180;     % angle between direction and y-axis
-angular_velocity = [0, 0, -8.59106529209622*pi];     % angular velocity in rad/s
-rho_c = 1607;               % bulk density of the sand in kg/m³   
-mu_int = 1.07;              % internal friction coefficient of the sand
-mu_surf = 0.1787;             % intruder-surface interaction coefficient
-gravity = 9.81;             % gravity in m/s²
-
-%direction_vector = [1 1 0];
-direction_vector = [round(cos(direction_angle_xz), 15) round(cos(direction_angle_y), 15) round(sin(direction_angle_xz), 15)];
-
-unit_test = false;
-
-%% Read .stl file
-TRG = stlread(strcat('./', folder, '/Models/', object, triangle_size_calculation, '.stl'));  % Mesh size for calculation
-TRG_visual = stlread(strcat('./', folder, '/Models/', object, triangle_size_visualization, '.stl'));  % Mesh size for force plots
-
-TRG = rotate_triangulation_x(TRG, -90);  % Rotate TRG object
-TRG_visual = rotate_triangulation_x(TRG_visual, -90);
-
-%% Plot options
-show_geometry = false;
-show_direction = false;
-
-show_f_quiver = false;
-show_alpha = false;
-
-show_f_scatter = 0;
-show_f_scatterxyz = false;
-
-show_linear_f = false;
-
-saveFigures = false;
-
-
-sim_data_dtos = SimDataTransferObject.empty(0,num_steps);
-
-step = 1;
-depths = start_depth:step_size:end_depth;
-z = zeros(1, num_steps);
-
-for depth = start_depth:step_size:end_depth
-    TRG = move_triangulation_z(TRG, depth);  % Align bottom of object with depth input
-    TRG_visual = move_triangulation_z(TRG_visual, depth);
-
-    points = (incenter(TRG)').';
-    normals = (faceNormal(TRG)').';
-    area = (generate_area(TRG.Points', TRG.ConnectivityList')).';
-
-    [c_inc, v_norm_vec, F, f, forces_x, forces_y, forces_z, forces, T, torque_x, torque_y, torque_z, alpha_gen, alpha_gen_n, alpha_gen_t, alpha] = RFT3Dfunc(points, normals, area, rotation, angular_velocity, linear_velocity, direction_vector, rho_c, mu_int, mu_surf, gravity, unit_test);
-    sim_data_dtos(step) = SimDataTransferObject(points, c_inc, v_norm_vec, F, f, forces_x, forces_y, forces_z, forces, T, torque_x, torque_y, torque_z, alpha_gen, alpha_gen_n, alpha_gen_t, alpha, TRG, TRG_visual);
-    z(step) = sim_data_dtos(step).torque_z;
-    step = step + 1;
-end
-
-for_excel = [depths; z];
-
-points = sim_data_dtos(end).points;
-c_inc = sim_data_dtos(end).c_inc;
-v_norm_vec = sim_data_dtos(end).v_norm_vec;
-F = sim_data_dtos(end).F;
-f = sim_data_dtos(end).f;
-forces_x = sim_data_dtos(end).forces_x;
-forces_y = sim_data_dtos(end).forces_y;
-forces_z = sim_data_dtos(end).forces_z;
-forces = sim_data_dtos(end).forces;
-T = sim_data_dtos(end).T;
-torque_x = sim_data_dtos(end).torque_x;
-torque_y = sim_data_dtos(end).torque_y;
-torque_z = sim_data_dtos(end).torque_z;
-alpha_gen = sim_data_dtos(end).alpha_gen;
-alpha_gen_n = sim_data_dtos(end).alpha_gen_n;
-alpha_gen_t = sim_data_dtos(end).alpha_gen_t;
-alpha = sim_data_dtos(end).alpha;
-TRG = sim_data_dtos(end).TRG;
-TRG_visual = sim_data_dtos(end).TRG_visual;
-
-plots_publication
-
-
-plot(depths, abs(z), 'LineWidth', 1.5);
+    folder = 'robottip';                                    % cylinder, simple, robottip
+    object = tips{index};                                    % name of stl
+    triangle_size_calculation = 'veryrough';                    % 'Fine', 'Normal', 'Rough', 'VeryRough'
+    triangle_size_visualization = 'veryrough';              % 'Fine', 'Normal', 'Rough', 'VeryRough'
+    
+    %% Physical Properties
+    rho_c = 1607;                                           % bulk density of the sand in kg/m³   
+    mu_int = 1.07;                                          % internal friction coefficient of the sand
+    mu_surf = 0.1806;                                          % intruder-surface interaction coefficient
+    gravity = 9.81;                                         % gravity in m/s²
+    xi_n = rho_c * gravity * (894*mu_int^3 - 386*mu_int^2 + 89*mu_int); % initially in N/m³
+    
+    %% Movement parameters
+    rotation = true;                                        % true or false
+    linear_velocity = 0.01;                                  % linear velocity in m/s
+    direction_angle_xz = -90 * pi / 180;                    % angle between direction and x-z-axis
+    direction_angle_y = -90 * pi / 180;                     % angle between direction and y-axis
+    angular_velocity = [0, 0, -9*pi];                       % angular velocity in rad/s
+    direction_vector = [round(cos(direction_angle_xz), 15) ...
+        round(cos(direction_angle_y), 15) round(sin(direction_angle_xz), 15)];
+    
+    %% Depth parameters
+    start_depth = 0;
+    end_depth = 0.125;
+    step_size = 0.005;
+    
+    %% Plot options
+    show_geometry = 0;
+    show_direction = 0;
+    
+    show_f_quiver = 0;
+    show_alpha = 0;
+    
+    show_f_scatter = 0;
+    show_f_scatterxyz = 0;
+    
+    show_linear_f = 0;
+    show_depth_dependend = 0;
+    
+    saveFigures = 0;
+    
+    %% Miscellaneous
+    unit_test = false;
+    threshold = 1.0e-12;
+    
+    
+    %% Read .stl file
+    TRG = stlread(strcat('./', folder, '/Models/', object, ...
+        triangle_size_calculation, '.stl'));                            % mesh for calculation
+    TRG_visual = stlread(strcat('./', folder, '/Models/', object, ...
+        triangle_size_visualization, '.stl'));                          % mesh for force plots
+    
+    
+    TRG = rotateTriangulationX(TRG, -90);                                % rotate TRG object
+    TRG_visual = rotateTriangulationX(TRG_visual, -90);                  % rotate Visual
+    
+    
+    %% Loop over depths
+    num_steps = (end_depth - start_depth)./step_size;
+    depths = start_depth:step_size:end_depth;
+    results = zeros(6, num_steps);
+    
+    step = 1;
+    
+    for depth = start_depth:step_size:end_depth
+    
+        TRG = moveTriangulationZ(TRG, depth);                         % align align bottom with depth
+        TRG_visual = moveTriangulationZ(TRG_visual, depth);           % align bottom with depth (visual)
+        
+        % step 1: process STL data
+        [points, normals, areas, depth_list] = getStlData(TRG, TRG.Points', TRG.ConnectivityList');
+    
+        % step 2: define movement vector
+        [movement, movement_normalized] = calcVelocity(points, direction_vector, linear_velocity, rotation, angular_velocity, threshold);
+    
+        % step 3: RFT conditions
+        [include, normals_include, movement_normalized_include, movement_include, areas_include, points_include, depth_list_include] ...
+            = checkConditions(points, normals, areas, movement, movement_normalized, depth_list, unit_test, threshold);
+    
+        % step 4: find local coordinate frame
+        [z_local, r_local, theta_local] = findLocalFrame(normals_include, movement_normalized_include, movement_include, include, unit_test);
+    
+        % step 5: RFT characteristic angles
+        [beta, gamma, psi] = findAngles(normals_include, movement_normalized_include, r_local, z_local, theta_local);
+    
+        % step 6: empirically determined force components
+        [f1, f2, f3] = findFit(gamma, beta, psi, z_local, movement_normalized_include, normals_include, threshold, depth_list_include, include, unit_test);
+    
+        % step 7: find generic form of alpha, split into normal and tangential
+        % components and add soil + interface properties for to get alpha
+        [alpha_gen, alpha_gen_n, alpha_gen_t, alpha] = findAlpha(normals_include, movement_normalized_include, beta, gamma, psi, r_local, theta_local, z_local, f1, f2, f3, mu_surf, xi_n);
+    
+        % step 8: get forces
+        [forces, pressures, force_x, force_y, force_z, resultant] = getForces(depth_list_include, areas_include, alpha);
+    
+        % step 9: get torques
+        [T, torque_x, torque_y, torque_z] = getTorques(points_include, depth_list_include, forces, unit_test, include);
+    
+    
+        results(:,step) = [force_x; force_y; force_z; torque_x; torque_y; torque_z];
+    
+        disp(['Depth processed: ', num2str(depth), 'm']);
+        step = step + 1;
+    
+    end
+    
+    
+    %% Plotting
+    result_depth_dependend = results(6,:);
+    plots_publication
+    
+    %% Finish
+    varList = evalin('caller', 'who');
+    matches = regexp(varList, '^show_\w*', 'match');
+    matches = vertcat(matches{:});
+    clear(matches{:})
+    
+    disp("Done!");
+    plot(depths, result_depth_dependend, 'LineWidth', 1.5);
+    clear("result_depth_dependend");
 end
 
 legend(tips , "Location", "northwest");

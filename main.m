@@ -4,7 +4,7 @@ close all
 %% Intruder geometry
 folder = 'cylinder';                                    % cylinder, simple, robottip
 object = 'cylinder';                                    % name of stl
-triangle_size_calculation = 'rough';                    % 'Fine', 'Normal', 'Rough', 'VeryRough'
+triangle_size_calculation = 'fine';                    % 'Fine', 'Normal', 'Rough', 'VeryRough'
 triangle_size_visualization = 'veryrough';              % 'Fine', 'Normal', 'Rough', 'VeryRough'
 
 %% Physical Properties
@@ -62,7 +62,7 @@ TRG_visual = rotateTriangulationX(TRG_visual, -0);                  % rotate Vis
 %% Loop over depths
 num_steps = (end_depth - start_depth)./step_size;
 depths = start_depth:step_size:end_depth;
-results = zeros(6, num_steps);
+results = zeros(7, num_steps);
 
 step = 1;
 
@@ -101,7 +101,7 @@ for depth = start_depth:step_size:end_depth
     [T, torque_x, torque_y, torque_z] = getTorques(points_include, depth_list_include, forces, unit_test, include);
 
 
-    results(:,step) = [force_x; force_y; force_z; torque_x; torque_y; torque_z];
+    results(:,step) = [depth; force_x; force_y; force_z; torque_x; torque_y; torque_z];
 
     disp(['Depth processed: ', num2str(depth), 'm']);
     step = step + 1;
@@ -110,7 +110,7 @@ end
 
 
 %% Plotting
-result_depth_dependend = results(6,:);
+result_depth_dependend = results(7,:);
 plots_publication
 
 %% Finish
