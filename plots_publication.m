@@ -1,4 +1,3 @@
-close all
 % Show the tip mesh
 if show_geometry
     figure

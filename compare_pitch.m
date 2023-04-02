@@ -1,7 +1,12 @@
 % Iterate through depth 
 clear
 close
+tips = {'tipnr1', 'tipnr2', 'tipnr3'};
 
+figure
+hold on;
+
+for index = 1:1:3
 start_depth = 0;
 end_depth = 0.13;
 step_size = 0.01;
@@ -9,7 +14,7 @@ num_steps = (end_depth - start_depth)./step_size;
 
 %% Define inputs - Agarwal verification studies
 folder = 'robottip';        % Cylinder, Simple, PlateAnchor or RobotTip
-object = 'tipnr2';          % Name of stl
+object = tips{index};          % Name of stl
 triangle_size_calculation = 'normal';   % 'Fine', 'Normal', 'Rough', 'VeryRough'
 triangle_size_visualization = 'veryrough';  % 'Fine', 'Normal', 'Rough', 'VeryRough'
 rotation = true;                        % true or false
@@ -93,7 +98,8 @@ TRG_visual = sim_data_dtos(end).TRG_visual;
 
 plots_publication
 
-figure
+
 plot(depths, abs(z), 'LineWidth', 1.5);
-hold on;
-legend("Version 1", "Version 2", "Location", "northwest");
+end
+
+legend(tips , "Location", "northwest");
