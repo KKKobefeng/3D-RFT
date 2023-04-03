@@ -1,3 +1,15 @@
+% if show_geometry || show_direction || show_f_quiver || show_f_scatter || show_f_scatterxyz || show_alpha
+%     figure
+%     colormap jet;
+%     view([45 25])
+%     daspect([1 1 1]);
+%     xlabel('X  [mm]');
+%     ylabel('Y  [mm]');
+%     zlabel('Z  [mm]');
+%     axis on;
+%     zlim([-inf inf]);
+
+
 % Show the tip mesh
 if show_geometry
     figure
@@ -89,7 +101,7 @@ if show_f_quiver
     %trisurf(TRG)
     q = quiver3(points_include(:,1), points_include(:,2), points_include(:,3), -forces(:,1), -forces(:,2), -forces(:,3),2, 'LineWidth', 1, 'MaxHeadSize', 0);
     currentColormap = jet;
-    SetQuiverColor(q,currentColormap);
+    setQuiverColor(q,currentColormap);
     set(findall(gcf,'-property','FontSize'),'FontSize',14);
     if saveFigures
     set(gcf,'PaperPositionMode','auto')
@@ -210,7 +222,7 @@ if show_alpha
     %trisurf(TRG)
     q = quiver3(points_include(:,1), points_include(:,2), points_include(:,3), alpha_gen(:,1), alpha_gen(:,2), alpha_gen(:,3),2, 'LineWidth', 2, 'ShowArrowHead','on', 'MaxHeadSize', 5);
     currentColormap = jet;
-    SetQuiverColor(q,currentColormap);
+    setQuiverColor(q,currentColormap);
     if saveFigures
     set(gcf,'PaperPositionMode','auto')
     print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/alpha_gen_quiver_', object, triangle_size_calculation, '.pdf'));
@@ -231,7 +243,7 @@ if show_alpha
     %trisurf(TRG)
     q = quiver3(points_include(:,1), points_include(:,2), points_include(:,3), alpha_gen_n(:,1), alpha_gen_n(:,2), alpha_gen_n(:,3),2, 'LineWidth', 2, 'ShowArrowHead','on', 'MaxHeadSize', 5);
     currentColormap = jet;
-    SetQuiverColor(q,currentColormap);
+    setQuiverColor(q,currentColormap);
     if saveFigures
     set(gcf,'PaperPositionMode','auto')
     print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/alpha_gen_n_quiver_', object, triangle_size_calculation, '.pdf'));
@@ -252,7 +264,7 @@ if show_alpha
     %trisurf(TRG)
     q = quiver3(points_include(:,1), points_include(:,2), points_include(:,3), alpha_gen_t(:,1), alpha_gen_t(:,2), alpha_gen_t(:,3),2, 'LineWidth', 2, 'ShowArrowHead','on', 'MaxHeadSize', 5);
     currentColormap = jet;
-    SetQuiverColor(q,currentColormap);
+    setQuiverColor(q,currentColormap);
     if saveFigures
     set(gcf,'PaperPositionMode','auto')
     print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/alpha_gen_t_quiver_', object, triangle_size_calculation, '.pdf'));
@@ -261,130 +273,8 @@ if show_alpha
 
 end
 
-if show_linear_f
-    % Plot linear graph forces - depth
-    x_depth = [0.1 0.1 0.1];
-    y_forces = [force_x force_y force_z];
-    y_forces_agarwal = [0 0 42.55];  % pi --> 42.55 ; 0.5pi --> 53.80 ; 0.25pi --> 59.35
-    figure;
-    for i=1:3
-        X = [0 x_depth(i)];
-        Y = [0 y_forces_agarwal(i)];
-        plot(X, Y, 'LineWidth', 1, 'Color', 'k', 'LineStyle', '--') % plot agarwal lines
-        hold on
-    end
-    for i=1:3
-        X = [0 x_depth(i)];
-        Y = [0 y_forces(i)];
-        plot(X, Y, 'LineWidth', 1, 'Color', 'k', 'LineStyle', '-')  % plot lines
-        hold on
-    end
-    xlabel('Depth [m]');
-    ylabel('Forces [N]');
-    grid on;
-    xlim([0 0.1]);
-    ylim([-10 75]);
-    legend('Reference study', '', '', 'Implementation', 'Location', 'northwest')
-    if saveFigures
-    set(gcf,'PaperPositionMode','auto')
-    print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/forces_depth_', object, '.pdf'));
-    end
-    hold off;
-
-
-    % Plot linear graph torque - depth
-    x_depth = [0.1 0.1 0.1];
-    y_torque = [torque_x torque_y torque_z];
-    y_torque_agarwal = [0 0 0.831];  % pi --> 0.831 ; 0.5pi --> 0.644 ; 0.25pi --> 0.375
-    figure;
-    for i=1:3
-        X = [0 x_depth(i)];
-        Y = [0 y_torque_agarwal(i)];
-        plot(X, Y, 'LineWidth', 1, 'Color', 'k', 'LineStyle', '--') % plot agarwal lines
-        hold on
-    end
-    for i=1:3
-        X = [0 x_depth(i)];
-        Y = [0 y_torque(i)];
-        plot(X, Y, 'LineWidth', 1, 'Color', 'k', 'LineStyle', '-')  % plot lines
-        hold on
-    end
-    xlabel('Depth [m]');
-    ylabel('Torque [Nm]');
-    xlim([0 0.1]);
-    ylim([-0.1 1.6]);
-    grid on;
-    legend('Reference study', '', '', 'Implementation', 'Location', 'northwest')
-    if saveFigures
-    set(gcf,'PaperPositionMode','auto')
-    print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/torque_depth_', object, '.pdf'));
-    end
-    hold off;
-end
-
 
 if show_depth_dependend
     figure
     plot(depths, abs(result_depth_dependend), 'LineWidth', 1.5);
 end
-
-function SetQuiverColor(q,currentColormap,varargin)
-%// Set default values
-range = [];
-mags = [];
-
-%// Read the optional range value
-if find(strcmp('range',varargin))
-  range = varargin{ find(strcmp('range',varargin))+1 };
-end
-
-qU = q.UData(~isnan(q.UData));
-qV = q.VData(~isnan(q.VData));
-qW = q.WData(~isnan(q.WData));
-
-%// Compute/read the magnitude of the vectors
-if find(strcmp('mags',varargin))
-  mags = varargin{ find(strcmp('mags',varargin))+1 };
-  mags = mags(~isnan(mags)&~isnan(q.UData));  % This reshapes automatically
-else
-  mags = sqrt(sum(cat(2, qU, qV, ...
-             reshape(qW, numel(qU), [])).^2, 2));
-end
-%// If range is auto, take range as the min and max of mags
-if isstr(range) & strcmp(range,'auto')
-  range = [min(mags) max(mags)];
-end
-
-%// Change value depending on the desired range
-if ~isempty(range) & isnumeric(range) & numel(range)==2
-  range = sort(range);
-  mags(mags>range(2)) = range(2);
-  mags(mags<range(1)) = range(1);
-end
-
-%// Now determine the color to make each arrow using a colormap
-if ~isempty(range) & isnumeric(range) & numel(range)==2
-  Edges = linspace(range(1),range(2),size(currentColormap, 1)+1);
-  [~, ~, ind] = histcounts(mags, Edges);
-else
-  [~, ~, ind] = histcounts(mags, size(currentColormap, 1));
-end
-
-%// Now map this to a colormap to get RGB
-cmap = uint8(ind2rgb(ind(:), currentColormap) * 255);
-cmap(:,:,4) = 255;
-cmap = permute(repmat(cmap, [1 3 1]), [2 1 3]);
-
-%// Color data
-cd_head = reshape(cmap(1:3,:,:), [], 4).';
-cd_tail = reshape(cmap(1:2,:,:), [], 4).';
-
-%// We repeat each color 3 times (using 1:3 below) because each arrow has 3 vertices
-set(q.Head, 'ColorBinding', 'interpolated', 'ColorData', cd_head);
-
-%// We repeat each color 2 times (using 1:2 below) because each tail has 2 vertices
-set(q.Tail, 'ColorBinding', 'interpolated', 'ColorData', cd_tail);
-
-end
-
-

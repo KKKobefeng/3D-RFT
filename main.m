@@ -2,9 +2,9 @@ clear
 close all
 
 %% Intruder geometry
-folder = 'robottip';                                    % cylinder, simple, robottip
+folder = 'robot';                                    % cylinder, simple, robottip
 object = 'tipnr3';                                    % name of stl
-triangle_size_calculation = 'normal';                    % 'Fine', 'Normal', 'Rough', 'VeryRough'
+triangle_size_calculation = 'veryrough';                    % 'Fine', 'Normal', 'Rough', 'VeryRough'
 triangle_size_visualization = 'veryrough';              % 'Fine', 'Normal', 'Rough', 'VeryRough'
 
 %% Physical Properties
@@ -30,16 +30,15 @@ step_size = 0.005;
 
 %% Plot options
 show_geometry = 1;
-show_direction = 0;
+show_direction = 1;
 
-show_f_quiver = 0;
-show_alpha = 0;
+show_f_quiver = 1;
+show_alpha = 1;
 
-show_f_scatter = 0;
+show_f_scatter = 1;
 show_f_scatterxyz = 0;
 
-show_linear_f = 0;
-show_depth_dependend = 0;
+show_depth_dependend = 1;
 
 saveFigures = 0;
 
