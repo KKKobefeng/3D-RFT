@@ -2,45 +2,47 @@
 clear
 close
 tips = {'tipnr4', 'tipnr5', 'tipnr6', 'tipnr7', 'tipnr8'};
+colors = {'#d11141', '#00b159', '#00aedb', '#f37735', '#ffc425'};
 
 figure
 hold on;
 
-start_depth = 0;
-end_depth = 0.13;
-step_size = 0.05;
-num_steps = (end_depth - start_depth)./step_size;
-
 for index = 1:1:5
-    folder = 'robottip';                                    % cylinder, simple, robottip
+    %% Intruder geometry
+    folder = 'robot';                                    % cylinder, simple, robottip
     object = tips{index};                                    % name of stl
     triangle_size_calculation = 'veryrough';                    % 'Fine', 'Normal', 'Rough', 'VeryRough'
     triangle_size_visualization = 'veryrough';              % 'Fine', 'Normal', 'Rough', 'VeryRough'
+    rotation_angle = -90;
+    
     
     %% Physical Properties
-    rho_c = 1607;                                           % bulk density of the sand in kg/m³   
+    rho_c = 1605;                                           % bulk density of the sand in kg/m³   
     mu_int = 1.07;                                          % internal friction coefficient of the sand
     mu_surf = 0.1806;                                          % intruder-surface interaction coefficient
     gravity = 9.81;                                         % gravity in m/s²
     xi_n = rho_c * gravity * (894*mu_int^3 - 386*mu_int^2 + 89*mu_int); % initially in N/m³
+    
     
     %% Movement parameters
     rotation = true;                                        % true or false
     linear_velocity = 0.01;                                  % linear velocity in m/s
     direction_angle_xz = -90 * pi / 180;                    % angle between direction and x-z-axis
     direction_angle_y = -90 * pi / 180;                     % angle between direction and y-axis
-    angular_velocity = [0, 0, -9*pi];                       % angular velocity in rad/s
+    angular_velocity = [0, 0, -5*pi];                       % angular velocity in rad/s
     direction_vector = [round(cos(direction_angle_xz), 15) ...
         round(cos(direction_angle_y), 15) round(sin(direction_angle_xz), 15)];
     
+    
     %% Depth parameters
     start_depth = 0;
-    end_depth = 0.125;
+    end_depth = 0.12;
     step_size = 0.005;
+    
     
     %% Plot options
     show_geometry = 0;
-    show_direction = 0;
+    show_movement = 0;
     
     show_f_quiver = 0;
     show_alpha = 0;
@@ -48,10 +50,10 @@ for index = 1:1:5
     show_f_scatter = 0;
     show_f_scatterxyz = 0;
     
-    show_linear_f = 0;
-    show_depth_dependend = 0;
+    show_results = 0;
     
     saveFigures = 0;
+    
     
     %% Miscellaneous
     unit_test = false;
@@ -64,15 +66,14 @@ for index = 1:1:5
     TRG_visual = stlread(strcat('./', folder, '/Models/', object, ...
         triangle_size_visualization, '.stl'));                          % mesh for force plots
     
-    
-    TRG = rotateTriangulationX(TRG, -90);                                % rotate TRG object
-    TRG_visual = rotateTriangulationX(TRG_visual, -90);                  % rotate Visual
+    TRG = rotateTriangulationX(TRG, rotation_angle);                               % rotate TRG object
+    TRG_visual = rotateTriangulationX(TRG_visual, rotation_angle);                 % rotate Visual
     
     
     %% Loop over depths
     num_steps = (end_depth - start_depth)./step_size;
     depths = start_depth:step_size:end_depth;
-    results = zeros(6, num_steps);
+    results = zeros(7, num_steps);
     
     step = 1;
     
@@ -111,7 +112,7 @@ for index = 1:1:5
         [T, torque_x, torque_y, torque_z] = getTorques(points_include, depth_list_include, forces, unit_test, include);
     
     
-        results(:,step) = [force_x; force_y; force_z; torque_x; torque_y; torque_z];
+        results(:,step) = [depth; force_x; force_y; force_z; torque_x; torque_y; torque_z];
     
         disp(['Depth processed: ', num2str(depth), 'm']);
         step = step + 1;
@@ -119,9 +120,45 @@ for index = 1:1:5
     end
     
     
+    %% Misc Readings
+    intruder_width_x = abs( max(points(:,1)) - min(points(:,1)) );
+    intruder_width_y = abs( max(points(:,2)) - min(points(:,2)) );
+    intruder_height = abs( max(points(:,3)) - min(points(:,3)) );
+    
+    
     %% Plotting
-    result_depth_dependend = results(6,:);
-    plots_publication
+    x_range = [min(points(:,1))-intruder_width_x/10 max(points(:,1))+intruder_width_x/10];
+    y_range = [min(points(:,2))-intruder_width_y/10 max(points(:,2))+intruder_width_y/10];
+    z_range = [min(points(:,3))-intruder_height/10 max(points(:,3))+intruder_height/10];
+    
+    if show_geometry
+        plotGeometry
+    end
+    
+    if show_movement
+        plotMovement
+    end
+    
+    if show_f_quiver
+        plotFQuiver
+    end
+    
+    if show_alpha
+        plotAlpha
+    end
+    
+    if show_f_scatter
+        plotFScatter
+    end
+    
+    if show_f_scatterxyz
+        plotFScatterxyz
+    end
+    
+    if show_results
+        plotResults
+    end
+    
     
     %% Finish
     varList = evalin('caller', 'who');
@@ -130,8 +167,11 @@ for index = 1:1:5
     clear(matches{:})
     
     disp("Done!");
-    plot(depths, result_depth_dependend, 'LineWidth', 1.5);
-    clear("result_depth_dependend");
+
+    plot(depths, results(7,:), "LineWidth", 1.25, "Color", colors{index});
 end
 
+xlabel("Depth [mm]");
+ylabel("Torque [Nm]");
 legend(tips , "Location", "northwest");
+set(findall(gcf,'-property','FontSize'),'FontSize',14);

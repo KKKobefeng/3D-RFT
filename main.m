@@ -3,9 +3,9 @@ close all
 
 %% Intruder geometry
 folder = 'robot';                                    % cylinder, simple, robottip
-object = 'tipnr1';                                    % name of stl
+object = 'tipnr5';                                    % name of stl
 triangle_size_calculation = 'normal';                    % 'Fine', 'Normal', 'Rough', 'VeryRough'
-triangle_size_visualization = 'veryrough';              % 'Fine', 'Normal', 'Rough', 'VeryRough'
+triangle_size_visualization = 'normal';              % 'Fine', 'Normal', 'Rough', 'VeryRough'
 rotation_angle = -90;
 
 
@@ -22,14 +22,14 @@ rotation = true;                                        % true or false
 linear_velocity = 0.01;                                  % linear velocity in m/s
 direction_angle_xz = -90 * pi / 180;                    % angle between direction and x-z-axis
 direction_angle_y = -90 * pi / 180;                     % angle between direction and y-axis
-angular_velocity = [0, 0, -8*pi];                       % angular velocity in rad/s
+angular_velocity = [0, 0, -6.7*pi];                       % angular velocity in rad/s
 direction_vector = [round(cos(direction_angle_xz), 15) ...
     round(cos(direction_angle_y), 15) round(sin(direction_angle_xz), 15)];
 
 
 %% Depth parameters
 start_depth = 0;
-end_depth = 0.12;
+end_depth = 0.06;
 step_size = 0.01;
 
 
@@ -43,7 +43,7 @@ show_alpha = 0;
 show_f_scatter = 0;
 show_f_scatterxyz = 0;
 
-show_results = 1;
+show_results = 0;
 
 saveFigures = 0;
 
