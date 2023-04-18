@@ -54,5 +54,5 @@ title("(f)");
 xlabel("Depth [mm]");
 ylabel("Torque [Nm]");
 
-set(findall(gcf,'-property','FontSize'),'FontSize',14);
+set(findall(gcf,'-property','FontSize'),'FontSize',16);
 

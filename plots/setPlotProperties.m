@@ -9,6 +9,6 @@ function setPlotProperties(x_range, y_range, z_range)
     xlim(x_range);
     ylim(y_range);
     zlim(z_range);
-    set(findall(gcf,'-property','FontSize'),'FontSize',14);
+    set(findall(gcf,'-property','FontSize'),'FontSize',16);
 end
 

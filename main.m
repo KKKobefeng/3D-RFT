@@ -2,48 +2,48 @@ clear
 close all
 
 %% Intruder geometry
-folder = 'robot';                                    % cylinder, simple, robottip
-object = 'tipnr5';                                    % name of stl
-triangle_size_calculation = 'normal';                    % 'Fine', 'Normal', 'Rough', 'VeryRough'
+folder = 'cylinder';                                    % cylinder, simple, robottip
+object = 'cylinder';                                    % name of stl
+triangle_size_calculation = 'rough';                    % 'Fine', 'Normal', 'Rough', 'VeryRough'
 triangle_size_visualization = 'normal';              % 'Fine', 'Normal', 'Rough', 'VeryRough'
-rotation_angle = -90;
+rotation_angle = -0;                                    % rotate intruder around x-axis
 
 
 %% Physical Properties
-rho_c = 1605;                                           % bulk density of the sand in kg/m³   
-mu_int = 1.07;                                          % internal friction coefficient of the sand
-mu_surf = 0.1806;                                          % intruder-surface interaction coefficient
+rho_c = 1319;                                           % bulk density of the sand in kg/m³   
+mu_int = 0.21;                                          % internal friction coefficient of the sand
+mu_surf = 0.4;                                          % intruder-surface interaction coefficient
 gravity = 9.81;                                         % gravity in m/s²
 xi_n = rho_c * gravity * (894*mu_int^3 - 386*mu_int^2 + 89*mu_int); % initially in N/m³
 
 
 %% Movement parameters
 rotation = true;                                        % true or false
-linear_velocity = 0.01;                                  % linear velocity in m/s
+linear_velocity = 0.1;                                  % linear velocity in m/s
 direction_angle_xz = -90 * pi / 180;                    % angle between direction and x-z-axis
 direction_angle_y = -90 * pi / 180;                     % angle between direction and y-axis
-angular_velocity = [0, 0, -6.7*pi];                       % angular velocity in rad/s
+angular_velocity = [0, 0, -1*pi];                       % angular velocity in rad/s
 direction_vector = [round(cos(direction_angle_xz), 15) ...
     round(cos(direction_angle_y), 15) round(sin(direction_angle_xz), 15)];
 
 
 %% Depth parameters
 start_depth = 0;
-end_depth = 0.06;
-step_size = 0.01;
+end_depth = 0.125;
+step_size = 0.005;
 
 
 %% Plot options
-show_geometry = 0;
-show_movement = 0;
+show_geometry = 1;
+show_movement = 1;
 
-show_f_quiver = 0;
-show_alpha = 0;
+show_f_quiver = 1;
+show_alpha = 1;
 
-show_f_scatter = 0;
-show_f_scatterxyz = 0;
+show_f_scatter = 1;
+show_f_scatterxyz = 1;
 
-show_results = 0;
+show_results = 1;
 
 saveFigures = 0;
 

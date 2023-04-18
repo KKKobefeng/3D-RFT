@@ -41,7 +41,7 @@ c = colorbar;
 c.Layout.Tile = 'north';
 c.Ticks = [-max_pressure 0 max_pressure];
 c.Label.String = 'Pressure [N/mm²]';
-set(findall(gcf,'-property','FontSize'),'FontSize',14);
+set(findall(gcf,'-property','FontSize'),'FontSize',16);
 
 % Save figure
 if saveFigures

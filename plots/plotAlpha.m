@@ -12,13 +12,7 @@ if saveFigures
     print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/alpha_gen_quiver_', object, triangle_size_calculation, '.pdf'));
 end
 
-
-% Multiplot
-fig_width = 1000;
-fig_height = 500;
-figure('Units', 'pixels', 'Position', [0, 0, fig_width, fig_height]);
-
-subplot(1,2,1);
+figure;
 title ('Normal forces alpha_{gen,n} (quiver)');
 hold on;
 trimesh(TRG_visual, 'LineWidth', 0.1, 'EdgeColor', '#888888', 'FaceAlpha', 0);
@@ -31,7 +25,7 @@ if saveFigures
     print(gcf, '-dpdf', '-r300', '-vector', strcat('./', folder, '/Figures/alpha_gen_n_quiver_', object, triangle_size_calculation, '.pdf'));
 end
 
-subplot(1,2,2);
+figure;
 title ('Tangential forces alpha_{gen,t} (quiver)');
 hold on;
 trimesh(TRG_visual, 'LineWidth', 0.1, 'EdgeColor', '#888888', 'FaceAlpha', 0);
