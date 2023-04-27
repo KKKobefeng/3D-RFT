@@ -1,9 +1,9 @@
 % Iterate through depth 
 clear
 close
-tips = {'T1', 'T2', 'T3'};
-rotational_speed = {-2.5, -2.5, -2.5};
-colors = {'#fa7e1e', '#d62976', '#962fbf'};
+tips = {'T4', 'T5', 'T6', 'T7', 'T8'};
+rotational_speed = {-2.5, -2.5, -2.5, -2.5, -2.5};
+colors = {'#d11141', '#00b159', '#00aedb', '#f37735', '#ffc425'};
 
 figure
 hold on;
@@ -37,7 +37,7 @@ for index = 1:1:length(colors)
     
     %% Depth parameters
     start_depth = 0;
-    end_depth = 0.20;
+    end_depth = 0.12;
     step_size = 0.005;
     
     

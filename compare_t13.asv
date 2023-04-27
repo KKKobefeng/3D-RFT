@@ -1,23 +1,24 @@
 % Iterate through depth 
 clear
 close
-tips = {'tipnr4', 'tipnr5', 'tipnr6', 'tipnr7', 'tipnr8'};
-colors = {'#d11141', '#00b159', '#00aedb', '#f37735', '#ffc425'};
+tips = {'T1', 'T2', 'T3'};
+rotational_speed = {-2.5, -2.5};
+colors = {'#fa7e1e', '#d62976', '#962fbf'};
 
 figure
 hold on;
 
-for index = 1:1:5
+for index = 1:1:3
     %% Intruder geometry
     folder = 'robot';                                    % cylinder, simple, robottip
     object = tips{index};                                    % name of stl
-    triangle_size_calculation = 'veryrough';                    % 'Fine', 'Normal', 'Rough', 'VeryRough'
-    triangle_size_visualization = 'veryrough';              % 'Fine', 'Normal', 'Rough', 'VeryRough'
-    rotation_angle = -90;
+    triangle_size_calculation = 'rough';                    % 'Fine', 'Normal', 'Rough', 'VeryRough'
+    triangle_size_visualization = 'rough';              % 'Fine', 'Normal', 'Rough', 'VeryRough'
+    rotation_angle = 0;
     
     
     %% Physical Properties
-    rho_c = 1605;                                           % bulk density of the sand in kg/m³   
+    rho_c = 1617;                                           % bulk density of the sand in kg/m³   
     mu_int = 1.07;                                          % internal friction coefficient of the sand
     mu_surf = 0.1806;                                          % intruder-surface interaction coefficient
     gravity = 9.81;                                         % gravity in m/s²
@@ -29,14 +30,14 @@ for index = 1:1:5
     linear_velocity = 0.01;                                  % linear velocity in m/s
     direction_angle_xz = -90 * pi / 180;                    % angle between direction and x-z-axis
     direction_angle_y = -90 * pi / 180;                     % angle between direction and y-axis
-    angular_velocity = [0, 0, -5*pi];                       % angular velocity in rad/s
+    angular_velocity = [0, 0, -2.5*pi];                       % angular velocity in rad/s
     direction_vector = [round(cos(direction_angle_xz), 15) ...
         round(cos(direction_angle_y), 15) round(sin(direction_angle_xz), 15)];
     
     
     %% Depth parameters
     start_depth = 0;
-    end_depth = 0.12;
+    end_depth = 0.20;
     step_size = 0.005;
     
     
