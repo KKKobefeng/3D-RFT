@@ -27,7 +27,7 @@ for index = 1:1:length(colors)
     
     %% Movement parameters
     rotation = true;                                        % true or false
-    linear_velocity = 0.01;                                  % linear velocity in m/s
+    linear_velocity = 0.0001;                                  % linear velocity in m/s
     direction_angle_xz = -90 * pi / 180;                    % angle between direction and x-z-axis
     direction_angle_y = -90 * pi / 180;                     % angle between direction and y-axis
     angular_velocity = [0, 0, rotational_speed{index}];                       % angular velocity in rad/s
@@ -36,8 +36,8 @@ for index = 1:1:length(colors)
     
     
     %% Depth parameters
-    start_depth = 0;
-    end_depth = 0.12;
+    start_depth = 0.05;
+    end_depth = 0.11;
     step_size = 0.005;
     
     
@@ -74,7 +74,7 @@ for index = 1:1:length(colors)
     %% Loop over depths
     num_steps = (end_depth - start_depth)./step_size;
     depths = start_depth:step_size:end_depth;
-    results = zeros(7, num_steps);
+    results = zeros(7, round(num_steps, 0));
     
     step = 1;
     
