@@ -3,7 +3,9 @@ clear
 close
 tips = {'T4', 'T5', 'T6', 'T7', 'T8'};
 rotational_speed = {-2.5, -2.5, -2.5, -2.5, -2.5};
-colors = {'#d11141', '#00b159', '#00aedb', '#f37735', '#ffc425'};
+colors = {'#006165', '#57ab27', '#bdcd00', '#f6a800', '#cc071e'};
+
+result_cell = cell(length(colors), 1);
 
 figure
 hold on;
@@ -37,7 +39,7 @@ for index = 1:1:length(colors)
     
     %% Depth parameters
     start_depth = 0;
-    end_depth = 0.12;
+    end_depth = 0.20;
     step_size = 0.005;
     
     
@@ -169,6 +171,7 @@ for index = 1:1:length(colors)
     
     disp("Done!");
 
+    result_cell{index} = results;
     plot(depths, results(7,:), "LineWidth", 1.25, "Color", colors{index});
 end
 

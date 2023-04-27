@@ -1,9 +1,9 @@
 % Iterate through depth 
 clear
 close
-tips = {'T1', 'T2', 'T3'};
-rotational_speed = {-2.5, -2.5, -2.5};
-colors = {'#00549f', '#000000', '#e30066'};
+tips = {'T11', 'T12'};
+rotational_speed = {-2.5, -2.5};
+colors = {'#a11035', '#612158'};
 
 result_cell = cell(length(colors), 1);
 
