@@ -2,8 +2,8 @@
 clear
 close
 tips = {'S1', 'S2', 'S3', 'S4', 'S5'};
-rotational_speed = {-2.5, -2.5, -2.5, -2.5, -2.5};
-colors = {'#d11141', '#00b159', '#00aedb', '#f37735', '#ffc425'};
+rotational_speed = {-5, -5, -5, -5, -5};
+colors = {'#1b85b8', '#5a5255', '#559e83', '#ae5a41', '#c3cb71'};
 
 figure
 hold on;
@@ -36,9 +36,9 @@ for index = 1:1:length(colors)
     
     
     %% Depth parameters
-    start_depth = 0.05;
-    end_depth = 0.11;
-    step_size = 0.005;
+    start_depth = 0.06;
+    end_depth = 0.10;
+    step_size = 0.02;
     
     
     %% Plot options
@@ -169,10 +169,18 @@ for index = 1:1:length(colors)
     
     disp("Done!");
 
-    plot(depths, results(7,:), "LineWidth", 1.25, "Color", colors{index});
+    plot(depths, results(7,:), "LineWidth", 1.5, "Color", colors{index}, "Marker", "o", "MarkerFaceColor", colors{index});
 end
 
+xlim([0.05 0.11]);
 xlabel("Depth [mm]");
 ylabel("Torque [Nm]");
 legend(tips , "Location", "northwest");
-set(findall(gcf,'-property','FontSize'),'FontSize',14);
+set(findall(gcf,'-property','FontSize'),'FontSize',16);
+
+% Specify folder path
+folder = fullfile('analysis','plots');
+% Save figure in folder
+filename = 's15_comp_rft.pdf';
+file = fullfile(folder,filename);
+exportgraphics(gcf,file,'BackgroundColor','none','ContentType','vector');

@@ -3,7 +3,7 @@ clear
 close
 tips = {'T4', 'T5', 'T6', 'T7', 'T8'};
 rotational_speed = {-2.5, -2.5, -2.5, -2.5, -2.5};
-colors = {'#006165', '#57ab27', '#bdcd00', '#f6a800', '#cc071e'};
+colors = {'#00ABA9', '#0050EF', '#AA00FF', '#D80073', '#FA6800'};
 
 result_cell = cell(length(colors), 1);
 
@@ -172,10 +172,17 @@ for index = 1:1:length(colors)
     disp("Done!");
 
     result_cell{index} = results;
-    plot(depths, results(7,:), "LineWidth", 1.25, "Color", colors{index});
+    plot(depths, results(7,:), "LineWidth", 1.5, "Color", colors{index});
 end
 
 xlabel("Depth [mm]");
 ylabel("Torque [Nm]");
 legend(tips , "Location", "northwest");
-set(findall(gcf,'-property','FontSize'),'FontSize',14);
+set(findall(gcf,'-property','FontSize'),'FontSize',16);
+
+% Specify folder path
+folder = fullfile('analysis','plots');
+% Save figure in folder
+filename = 't48_comp_rft.pdf';
+file = fullfile(folder,filename);
+exportgraphics(gcf,file,'BackgroundColor','none','ContentType','vector');
