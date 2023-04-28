@@ -2,6 +2,7 @@
 clear
 close
 tips = {'T11', 'T12'};
+linear_speed = {0.001, 0.001};
 colors = {'#F0A30A', '#D80073'};
 
 result_cell = cell(length(colors), 1);
@@ -13,7 +14,7 @@ for index = 1:1:length(colors)
     %% Intruder geometry
     folder = 'robot';                                    % cylinder, simple, robottip
     object = tips{index};                                    % name of stl
-    triangle_size_calculation = 'rough';                    % 'Fine', 'Normal', 'Rough', 'VeryRough'
+    triangle_size_calculation = 'normal';                    % 'Fine', 'Normal', 'Rough', 'VeryRough'
     triangle_size_visualization = 'rough';              % 'Fine', 'Normal', 'Rough', 'VeryRough'
     rotation_angle = 0;
     
@@ -28,7 +29,7 @@ for index = 1:1:length(colors)
     
     %% Movement parameters
     rotation = true;                                        % true or false
-    linear_velocity = 0.01;                                  % linear velocity in m/s
+    linear_velocity = linear_speed{index};                                 % linear velocity in m/s
     direction_angle_xz = -90 * pi / 180;                    % angle between direction and x-z-axis
     direction_angle_y = -90 * pi / 180;                     % angle between direction and y-axis
     angular_velocity = [0, 0, -2*pi];                       % angular velocity in rad/s
@@ -171,9 +172,11 @@ for index = 1:1:length(colors)
     disp("Done!");
 
     result_cell{index} = results;
-    plot(depths, results(7,:), "LineWidth", 1.5, "Color", colors{index});
+    plot(depths*1000, results(7,:), "LineWidth", 1.5, "Color", colors{index});
 end
 
+xlim([0 180]);
+ylim([0 2]);
 xlabel("Depth [mm]");
 ylabel("Torque [Nm]");
 legend(tips , "Location", "northwest");
@@ -182,6 +185,6 @@ set(findall(gcf,'-property','FontSize'),'FontSize',16);
 % Specify folder path
 folder = fullfile('analysis','plots');
 % Save figure in folder
-filename = 't1112_comp_rft.pdf';
+filename = 't1112_const_rft.pdf';
 file = fullfile(folder,filename);
 exportgraphics(gcf,file,'BackgroundColor','none','ContentType','vector');

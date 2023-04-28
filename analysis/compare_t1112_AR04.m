@@ -1,9 +1,9 @@
 % Iterate through depth 
 clear
 close
-tips = {'T1', 'T2', 'T3'};
-linear_speed = {0.001, 0.001, 0.001};
-colors = {'#A4C400', '#008A00', '#1BA1E2'};
+tips = {'T11', 'T12'};
+linear_speed = {0.00800,	0.00640};
+colors = {'#F0A30A', '#D80073'};
 
 result_cell = cell(length(colors), 1);
 
@@ -29,7 +29,7 @@ for index = 1:1:length(colors)
     
     %% Movement parameters
     rotation = true;                                        % true or false
-    linear_velocity = linear_speed{index};                                  % linear velocity in m/s
+    linear_velocity = linear_speed{index};                                 % linear velocity in m/s
     direction_angle_xz = -90 * pi / 180;                    % angle between direction and x-z-axis
     direction_angle_y = -90 * pi / 180;                     % angle between direction and y-axis
     angular_velocity = [0, 0, -2*pi];                       % angular velocity in rad/s
@@ -176,7 +176,7 @@ for index = 1:1:length(colors)
 end
 
 xlim([0 180]);
-ylim([0 8]);
+ylim([0 2]);
 xlabel("Depth [mm]");
 ylabel("Torque [Nm]");
 legend(tips , "Location", "northwest");
@@ -185,6 +185,6 @@ set(findall(gcf,'-property','FontSize'),'FontSize',16);
 % Specify folder path
 folder = fullfile('analysis','plots');
 % Save figure in folder
-filename = 't13_const_rft.pdf';
+filename = 't1112_AR04_rft.pdf';
 file = fullfile(folder,filename);
 exportgraphics(gcf,file,'BackgroundColor','none','ContentType','vector');

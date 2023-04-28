@@ -2,7 +2,7 @@
 clear
 close
 tips = {'T1', 'T2', 'T3'};
-linear_speed = {0.001, 0.001, 0.001};
+linear_speed = {0.00240, 0.00240, 0.00240};
 colors = {'#A4C400', '#008A00', '#1BA1E2'};
 
 result_cell = cell(length(colors), 1);
@@ -185,6 +185,6 @@ set(findall(gcf,'-property','FontSize'),'FontSize',16);
 % Specify folder path
 folder = fullfile('analysis','plots');
 % Save figure in folder
-filename = 't13_const_rft.pdf';
+filename = 't13_AR02_rft.pdf';
 file = fullfile(folder,filename);
 exportgraphics(gcf,file,'BackgroundColor','none','ContentType','vector');

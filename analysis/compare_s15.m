@@ -11,7 +11,7 @@ for index = 1:1:length(colors)
     %% Intruder geometry
     folder = 'robot';                                    % cylinder, simple, robottip
     object = tips{index};                                    % name of stl
-    triangle_size_calculation = 'rough';                    % 'Fine', 'Normal', 'Rough', 'VeryRough'
+    triangle_size_calculation = 'normal';                    % 'Fine', 'Normal', 'Rough', 'VeryRough'
     triangle_size_visualization = 'rough';              % 'Fine', 'Normal', 'Rough', 'VeryRough'
     rotation_angle = 0;
     
