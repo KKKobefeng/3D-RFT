@@ -2,7 +2,6 @@
 clear
 close
 tips = {'S1', 'S2', 'S3', 'S4', 'S5'};
-rotational_speed = {-5, -5, -5, -5, -5};
 colors = {'#1b85b8', '#5a5255', '#559e83', '#ae5a41', '#c3cb71'};
 
 figure
@@ -30,7 +29,7 @@ for index = 1:1:length(colors)
     linear_velocity = 0.0001;                                  % linear velocity in m/s
     direction_angle_xz = -90 * pi / 180;                    % angle between direction and x-z-axis
     direction_angle_y = -90 * pi / 180;                     % angle between direction and y-axis
-    angular_velocity = [0, 0, rotational_speed{index}];                       % angular velocity in rad/s
+    angular_velocity = [0, 0, -2*pi];                       % angular velocity in rad/s
     direction_vector = [round(cos(direction_angle_xz), 15) ...
         round(cos(direction_angle_y), 15) round(sin(direction_angle_xz), 15)];
     
@@ -169,10 +168,10 @@ for index = 1:1:length(colors)
     
     disp("Done!");
 
-    plot(depths, results(7,:), "LineWidth", 1.5, "Color", colors{index}, "Marker", "o", "MarkerFaceColor", colors{index});
+    plot(depths*1000, results(7,:), "LineWidth", 1.5, "Color", colors{index}, "Marker", "o", "MarkerFaceColor", colors{index});
 end
 
-xlim([0.05 0.11]);
+xlim([50 110]);
 xlabel("Depth [mm]");
 ylabel("Torque [Nm]");
 legend(tips , "Location", "northwest");

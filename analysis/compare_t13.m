@@ -2,7 +2,7 @@
 clear
 close
 tips = {'T1', 'T2', 'T3'};
-rotational_speed = {-2.5, -2.5, -2.5};
+linear_speed = {0.01, 0.01, 0.01};
 colors = {'#A4C400', '#008A00', '#1BA1E2'};
 
 result_cell = cell(length(colors), 1);
@@ -29,10 +29,10 @@ for index = 1:1:length(colors)
     
     %% Movement parameters
     rotation = true;                                        % true or false
-    linear_velocity = 0.01;                                  % linear velocity in m/s
+    linear_velocity = linear_speed{index};                                  % linear velocity in m/s
     direction_angle_xz = -90 * pi / 180;                    % angle between direction and x-z-axis
     direction_angle_y = -90 * pi / 180;                     % angle between direction and y-axis
-    angular_velocity = [0, 0, rotational_speed{index}];                       % angular velocity in rad/s
+    angular_velocity = [0, 0, -2*pi];                       % angular velocity in rad/s
     direction_vector = [round(cos(direction_angle_xz), 15) ...
         round(cos(direction_angle_y), 15) round(sin(direction_angle_xz), 15)];
     
