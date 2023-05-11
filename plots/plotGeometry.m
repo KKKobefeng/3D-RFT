@@ -1,5 +1,6 @@
 % Plot
-figure
+figure;
+title("Meshed intruding object");
 hold on
 colormap winter;
 trisurf(TRG);
@@ -10,6 +11,7 @@ if saveFigures
 end
 
 figure;
+title("Centerpoints of the subsurfaces");
 hold on;
 colormap winter;
 scatter3(points(:,1), points(:,2), points(:,3), 5, 'filled');
@@ -20,6 +22,7 @@ if saveFigures
 end
 
 figure;
+title("Normals of the subsurfaces");
 hold on;
 colormap summer;
 quiver3(points(:,1), points(:,2), points(:,3), normals(:,1), normals(:,2), normals(:,3), 1.25);

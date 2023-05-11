@@ -1,6 +1,6 @@
 % Plot
 figure;
-title ('forces alpha_{gen} (quiver)');
+title ('Forces alpha_{gen} (quiver)');
 hold on;
 trimesh(TRG_visual, 'LineWidth', 0.1, 'EdgeColor', '#888888', 'FaceAlpha', 0);
 q = quiver3(points_include(:,1), points_include(:,2), points_include(:,3), alpha_gen(:,1), alpha_gen(:,2), alpha_gen(:,3),2, 'LineWidth', 2, 'ShowArrowHead','on', 'MaxHeadSize', 5);

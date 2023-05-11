@@ -172,7 +172,7 @@ for index = 1:1:length(colors)
     disp("Done!");
 
     result_cell{index} = results;
-    plot(depths*1000, results(7,:), "LineWidth", 1.5, "Color", colors{index});
+    plot(depths*1000, results(7,:), "LineWidth", 2.00, "Color", colors{index});
 end
 
 xlim([0 180]);
@@ -180,7 +180,7 @@ ylim([0 4]);
 xlabel("Depth [mm]");
 ylabel("Torque [Nm]");
 legend(tips , "Location", "northwest");
-set(findall(gcf,'-property','FontSize'),'FontSize',16);
+set(findall(gcf,'-property','FontSize'),'FontSize',20);
 
 % Specify folder path
 folder = fullfile('analysis','plots');

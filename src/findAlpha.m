@@ -6,7 +6,7 @@ function [alpha_gen, alpha_gen_n, alpha_gen_t, alpha] = findAlpha(normals_includ
     
     alpha_gen = alpha_r_gen.*r_local + alpha_theta_gen.*theta_local + alpha_z_gen.*z_local;
     
-    %% 9. Calculate the system specific alpha_n and alpha_t in the local coordinate frame
+    % Calculate the system specific alpha_n and alpha_t in the local coordinate frame
     % Correcting minor sign problems
     alpha_gen_n = zeros(size(normals_include,1),3);
     alpha_gen_t = zeros(size(normals_include,1),3);

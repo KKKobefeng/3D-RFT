@@ -54,5 +54,7 @@ title("(f)");
 xlabel("Depth [mm]");
 ylabel("Torque [Nm]");
 
+sgtitle("\bf{Sum of forces split per axis (a-c) and sum of torques per axis (d-f)}", "Fontsize", 16);
+
 set(findall(gcf,'-property','FontSize'),'FontSize',16);
 

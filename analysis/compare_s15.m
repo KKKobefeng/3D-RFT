@@ -26,7 +26,7 @@ for index = 1:1:length(colors)
     
     %% Movement parameters
     rotation = true;                                        % true or false
-    linear_velocity = 0.0001;                                  % linear velocity in m/s
+    linear_velocity = 0.000;                                  % linear velocity in m/s
     direction_angle_xz = -90 * pi / 180;                    % angle between direction and x-z-axis
     direction_angle_y = -90 * pi / 180;                     % angle between direction and y-axis
     angular_velocity = [0, 0, -2*pi];                       % angular velocity in rad/s
