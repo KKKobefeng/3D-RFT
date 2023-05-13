@@ -4,6 +4,8 @@ close
 tips = {'S1', 'S2', 'S3', 'S4', 'S5'};
 colors = {'#1b85b8', '#5a5255', '#559e83', '#ae5a41', '#c3cb71'};
 
+result_cell = cell(length(colors), 1);
+
 figure
 hold on;
 
@@ -169,6 +171,10 @@ for index = 1:1:length(colors)
     disp("Done!");
 
     plot(depths*1000, results(7,:), "LineWidth", 1.5, "Color", colors{index}, "Marker", "o", "MarkerFaceColor", colors{index});
+
+    result_cell{index} = results;
+
+    save(strcat(object,'_RFT.mat'),'results');
 end
 
 xlim([50 110]);

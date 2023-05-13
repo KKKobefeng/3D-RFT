@@ -3,7 +3,7 @@ close all
 
 %% Intruder geometry
 folder = 'robot';                               % cylinder, simple, robottip
-object = 'S3';                                  % name of stl
+object = 'T3';                                  % name of stl
 triangle_size_calculation = 'normal';            % 'Fine', 'Normal', 'Rough', 'VeryRough'
 triangle_size_visualization = 'rough';          % 'Fine', 'Normal', 'Rough', 'VeryRough'
 rotation_angle = 0;                             % rotate intruder around x-axis
@@ -19,7 +19,7 @@ xi_n = rho_c * gravity * (894*mu_int^3 - 386*mu_int^2 + 89*mu_int); % initially 
 
 %% Movement parameters
 rotation = true;                                % true or false
-linear_velocity = 0.000;                        % linear velocity in m/s
+linear_velocity = 0.002;                        % linear velocity in m/s
 direction_angle_xz = -90 * pi / 180;            % angle between direction and x-z-axis
 direction_angle_y = -90 * pi / 180;             % angle between direction and y-axis
 angular_velocity = [0, 0, -2*pi];               % angular velocity in rad/s
@@ -28,9 +28,9 @@ direction_vector = [round(cos(direction_angle_xz), 15) ...
 
 
 %% Depth parameters
-start_depth = 0.06;
-end_depth = 0.100;
-step_size = 0.02;
+start_depth = 0.18;
+end_depth = 0.18;
+step_size = 0.1;
 
 
 %% Plot selection
@@ -45,7 +45,7 @@ show_f_scatterxyz = 0;
 
 show_results = 0;
 
-saveFigures = 1;
+saveFigures = 0;
 
 
 %% Miscellaneous
